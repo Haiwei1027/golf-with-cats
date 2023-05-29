@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5034836829241096659
+--- !u!114 &-942879487215477439
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,14 +20,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Floor
-  m_Shader: {fileID: -6465566751694194690, guid: f5653e40ecb55ae4b90b5f0594e59731,
+  m_Name: Grass
+  m_Shader: {fileID: -6465566751694194690, guid: f46144f89b40fb641a549afd2cef2660,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -55,8 +55,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _EmissionFactor: 0.4
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.53414845, g: 0.7924528, b: 0.50462794, a: 0}
+    - _Color: {r: 0.54509807, g: 0.7411765, b: 0.54509807, a: 0}
   m_BuildTextureStacks: []
