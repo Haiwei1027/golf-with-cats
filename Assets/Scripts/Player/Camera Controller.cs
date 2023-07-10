@@ -6,11 +6,8 @@ public class CameraController : MonoBehaviour
 {
     private const int MiddleMouseButton = 2;
 
-    [Range(0,90)]
     public float angleOfDepression;
-    [Range(0,10)]
     public float cameraDistance;
-    [Range(0.1f, 10)]
     public float cameraSize;
 
     private Vector3 prevMousePos;
