@@ -10,26 +10,40 @@ using System.Net.Sockets;
 public class PostOffice : MonoBehaviour
 {
     public static readonly int Port = 7767;
-    public static readonly int socketBufferSize = 1024 * 1024;
+    public static readonly int SocketBufferSize = 1024 * 1024;
+    public static readonly int MaxPlayers = 10;
+
+    private List<Postbox> postboxes = new List<Postbox>();
 
     private Socket serverSocket;
 
     void Start()
     {
+
         serverSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
-            SendBufferSize = socketBufferSize,
-            ReceiveBufferSize = socketBufferSize
+            SendBufferSize = SocketBufferSize,
+            ReceiveBufferSize = SocketBufferSize
         };
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
     }
 
-    void FixedUpdate()
+    void AcceptConnection()
     {
         // checks if socket is readable
-        if (serverSocket.Poll(0, SelectMode.SelectRead)){
-            Socket clientSocket = serverSocket.Accept();
-            Postbox postbox = new Postbox(clientSocket);
-        }   
+        if (!serverSocket.Poll(0, SelectMode.SelectRead)) return;
+        // checks server not full
+        if (postboxes.Count >= MaxPlayers) return;
+        Socket clientSocket = serverSocket.Accept();
+        postboxes.Add(new Postbox(clientSocket));
+    }
+
+    void FixedUpdate()
+    {
+        AcceptConnection();
+        foreach(Postbox postbox in postboxes)
+        {
+            postbox.ReceiveData();
+        }
     }
 }

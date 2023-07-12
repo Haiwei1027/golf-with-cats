@@ -12,17 +12,25 @@ public class Postbox
     private Socket socket;
     
     private int expectLetterLength;
+    private byte[] receiveBuffer = new byte[PostOffice.SocketBufferSize];
+    private byte[] headerBytes = new byte[sizeof(ushort)];
 
     public Postbox(Socket socket)
     {
         this.socket = socket;
     }
 
-    public void Receive()
+    private void HandleData()
+    {
+
+    }
+
+    public void ReceiveData()
     {
         bool moreLetters = false;
         do
         {
+            int receivedLetterSize = 0;
             try
             {
                 // try receive content
@@ -30,20 +38,26 @@ public class Postbox
                 {
                     if (socket.Available >= expectLetterLength)
                     {
-
+                        receivedLetterSize = socket.Receive(receiveBuffer, expectLetterLength, SocketFlags.None);
+                        expectLetterLength = 0;
+                        moreLetters = true;
                     }
                     
                 }
                 // try receive header
                 else if (socket.Available >= sizeof(ushort))
                 {
-                    byte[] headerBytes = new byte[sizeof(ushort)];
                     socket.Receive(headerBytes, sizeof(ushort), SocketFlags.None);
+                    expectLetterLength = Letter.ReadHeader(headerBytes);
                 }
             }
             catch (SocketException ex)
             {
                 Debug.WriteLine(ex);
+            }
+            if (receivedLetterSize > 0)
+            {
+                HandleData();
             }
         } while (moreLetters);
     }
