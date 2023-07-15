@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.Text;
+using UnityEngine.Pool;
 /// <summary>
 /// This class acts as a data container and converter
 /// It handles data formatting, serialisation and deserialisation
@@ -9,9 +12,46 @@ using System.Collections.Generic;
 //this assumes big endian
 public class Letter
 {
+    private static LinkedPool<Letter> pooledLetters = new LinkedPool<Letter>(() => new Letter(),(l)=> l.Clear());
+
+    public static readonly ushort HeaderSize = sizeof(ushort);
+
+    private byte[] bytes;
+    private ushort pointer;
+    
+
     public Letter()
     {
+        bytes = new byte[4 * 1024];
+        pointer = HeaderSize;
+    }
 
+    public static Letter Get()
+    {
+        return pooledLetters.Get();
+    }
+
+    public void Clear()
+    {
+        pointer = HeaderSize;
+    }
+
+    public void Copy(byte[] buffer, int amount)
+    {
+        Array.Copy(buffer,0,bytes,HeaderSize, amount);
+    }
+
+    public ushort Ready(byte[] array, int startIndex)
+    {
+        WriteHeader();
+        Array.Copy(bytes, 0, array, startIndex, pointer);
+        return pointer;
+    }
+
+    public void WriteHeader()
+    {
+        bytes[0] = (byte)((pointer - HeaderSize) >> 8);
+        bytes[1] = (byte)(pointer - HeaderSize);
     }
 
     public static ushort ReadHeader(byte[] headerBytes)
@@ -19,21 +59,77 @@ public class Letter
         return (ushort)(headerBytes[1] | (byte)(headerBytes[1] << 8));
     }
 
-    public static void WriteHeader(ushort header, byte[] headerBytes)
+    public void Write(byte value)
     {
-        headerBytes[0] = (byte)(header >> 8);
-        headerBytes[1] = (byte)header;
+        bytes[pointer] = value;
+        pointer++;
     }
 
-    public static void WriteFloat(float value, byte[] array, int startIndex)
+    public byte ReadByte()
     {
-        Span<byte> buffer = new Span<byte>(array);
-        buffer.Slice(startIndex, 4);
-        BitConverter.GetBytes(value).CopyTo(array, startIndex);
+        byte value = bytes[pointer];
+        pointer++;
+        return value;
     }
 
-    public static float ReadFloat(byte[] array, int startIndex)
+    public void Write(float value)
     {
-        return BitConverter.ToSingle(array, startIndex);
+        BitConverter.GetBytes(value).CopyTo(bytes, pointer);
+        pointer += 4;
+    }
+
+    public float ReadFloat()
+    {
+        float value = BitConverter.ToSingle(bytes, pointer);
+        pointer += 4;
+        return value;
+
+    }
+
+    public void Write(int value)
+    {
+        BitConverter.GetBytes(value).CopyTo(bytes, pointer);
+        pointer += 4;
+    }
+
+    public int ReadInt()
+    {
+        int value = BitConverter.ToInt32(bytes, pointer);
+        pointer += 4;
+        return value;
+    }
+
+    public void Write(char value)
+    {
+        BitConverter.GetBytes(value).CopyTo(bytes, pointer);
+        pointer += 2;
+    }
+
+    public char ReadChar()
+    {
+        char value = BitConverter.ToChar(bytes, pointer);
+        pointer += 2;
+        return value;
+
+    }
+
+    public void Write(string value)
+    {
+        Write(value.Length);
+        foreach (char c in value)
+        {
+            Write(c);
+        }
+    }
+
+    public string ReadString()
+    {
+        StringBuilder sb = new StringBuilder();
+        int length = ReadInt();
+        for (int i = 0; i < length; i++)
+        {
+            sb.Append(ReadChar());
+        }
+        return sb.ToString();
     }
 }

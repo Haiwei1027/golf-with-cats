@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 /// <summary>
@@ -13,6 +13,7 @@ public class Postbox
     
     private int expectLetterLength;
     private byte[] receiveBuffer = new byte[PostOffice.SocketBufferSize];
+    private byte[] sendBuffer = new byte[PostOffice.SocketBufferSize];
     private byte[] headerBytes = new byte[sizeof(ushort)];
 
     public Postbox(Socket socket)
@@ -20,9 +21,17 @@ public class Postbox
         this.socket = socket;
     }
 
-    private void HandleData()
+    public IPEndPoint GetIP()
     {
+        return socket.RemoteEndPoint as IPEndPoint;
+    }
 
+    private void HandleData(int amount)
+    {
+        Letter letter = Letter.Get();
+        letter.Copy(receiveBuffer, amount);
+        byte type = letter.ReadByte();
+        PostOffice.letterHandlers[type](this, letter);
     }
 
     public void ReceiveData()
@@ -36,8 +45,10 @@ public class Postbox
                 // try receive content
                 if (expectLetterLength > 0 )
                 {
+                    ScreenConsole.Write("Expect " + expectLetterLength);
                     if (socket.Available >= expectLetterLength)
                     {
+                        ScreenConsole.Write("Availiable " + socket.Available);
                         receivedLetterSize = socket.Receive(receiveBuffer, expectLetterLength, SocketFlags.None);
                         expectLetterLength = 0;
                         moreLetters = true;
@@ -45,25 +56,48 @@ public class Postbox
                     
                 }
                 // try receive header
-                else if (socket.Available >= sizeof(ushort))
+                else if (socket.Available >= Letter.HeaderSize)
                 {
-                    socket.Receive(headerBytes, sizeof(ushort), SocketFlags.None);
+                    ScreenConsole.Write("Header");
+                    socket.Receive(headerBytes, Letter.HeaderSize, SocketFlags.None);
                     expectLetterLength = Letter.ReadHeader(headerBytes);
+                    moreLetters = true;
+                }
+                else
+                {
+                    moreLetters = false;
                 }
             }
             catch (SocketException ex)
             {
-                Debug.WriteLine(ex);
+                Console.WriteLine(ex);
             }
             if (receivedLetterSize > 0)
             {
-                HandleData();
+                HandleData(receivedLetterSize);
             }
         } while (moreLetters);
     }
 
-    public void Send()
+    public void Send(Letter letter)
     {
+        try
+        {
+            ushort amount = letter.Ready(sendBuffer, 0);
+            socket.Send(sendBuffer, amount, SocketFlags.None);
+            ScreenConsole.Write("Sent");
+        }
+        catch (SocketException ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
 
+    public void Close()
+    {
+        if (socket != null)
+        {
+            socket.Close();
+        }
     }
 }
