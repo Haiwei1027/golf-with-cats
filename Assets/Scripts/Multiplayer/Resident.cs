@@ -30,7 +30,7 @@ public class Resident : MonoBehaviour
                 ReceiveBufferSize = PostOffice.SocketBufferSize
             };
             ScreenConsole.Write("Connecting");
-            socket.Connect(new IPEndPoint(IPAddress.Loopback, PostOffice.Port));
+            socket.Connect(new IPEndPoint(IPAddress.Parse("52.174.197.247"), PostOffice.Port));
             postbox = new Postbox(socket);
         }
         for (int i = 97; i <= 122; i++)
