@@ -10,6 +10,8 @@ using System.Net.Sockets;
 /// </summary>
 public class Resident : MonoBehaviour
 {
+    [SerializeField] string ServerIP;
+
     float count = 0;
 
     Postbox postbox;
@@ -30,7 +32,7 @@ public class Resident : MonoBehaviour
                 ReceiveBufferSize = PostOffice.SocketBufferSize
             };
             ScreenConsole.Write("Connecting");
-            socket.Connect(new IPEndPoint(IPAddress.Parse("52.174.197.247"), PostOffice.Port));
+            socket.Connect(new IPEndPoint(IPAddress.Parse(ServerIP), PostOffice.Port));
             postbox = new Postbox(socket);
         }
         for (int i = 97; i <= 122; i++)
