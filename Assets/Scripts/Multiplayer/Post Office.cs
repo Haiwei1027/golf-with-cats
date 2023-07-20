@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
@@ -21,57 +20,82 @@ public class PostOffice : MonoBehaviour
     public delegate void LetterHandler(Postbox postbox, Letter letter);
     public static Dictionary<byte, LetterHandler> letterHandlers;
 
+    private bool listening = false;
     private bool accepting = false;
 
-    public void HandleGreet(Postbox postbox, Letter letter)
+    private System.Random randomGenerator;
+
+    public void HandleIntroduce(Postbox postbox, Letter letter)
     {
-        ScreenConsole.Write($"{postbox.GetIP()}:{ letter.ReadString() }");
+        string username = letter.ReadString();
+        postbox.Username = username;
+        Debug.LogError($"{username} Connected");
+        letter.Release();
     }
 
     void Start()
     {
-        ScreenConsole.Write("Initialising");
+        Debug.LogError("Initialising");
 
         letterHandlers = new Dictionary<byte, LetterHandler>()
         {
-            {(byte)LetterType.GREET, HandleGreet}
+            {(byte)LetterType.INTRODUCE, HandleIntroduce}
         };
 
-        ScreenConsole.Write("Starting");
+        Debug.LogError("Starting");
         serverSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = SocketBufferSize,
             ReceiveBufferSize = SocketBufferSize
         };
-        ScreenConsole.Write("Binding");
+        Debug.LogError("Binding");
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
         serverSocket.Listen(0);
+        listening = true;
     }
 
     void AcceptConnection()
     {
-        if (accepting) return;
+        if (accepting || !listening) return;
         if (serverSocket == null) return;
         if (!serverSocket.IsBound) return;
-        // checks server not full
         if (postboxes.Count >= MaxPlayers) return;
-        ScreenConsole.Write("Accepting");
+        Debug.LogError("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
         
     }
 
+    int GenerateUserID()
+    {
+        if (randomGenerator == null)
+        {
+            randomGenerator = new System.Random();
+        }
+        return randomGenerator.Next(9999_9999 + 1);
+    }
+
     void AcceptCallback(IAsyncResult result)
     {
         Socket clientSocket = serverSocket.EndAccept(result);
-        postboxes.Add(new Postbox(clientSocket));
+        Debug.LogError("Accepted");
+        Postbox newPostbox = new Postbox(clientSocket);
+        newPostbox.onLetter += (postbox, letter) =>
+        {
+            letterHandlers[letter.ReadByte()](postbox, letter);
+        };
+        newPostbox.Id = GenerateUserID();
+        Letter welcomeLetter = Letter.GetWelcome(newPostbox.Id);
+        newPostbox.Send(welcomeLetter);
+
+        postboxes.Add(newPostbox);
         accepting = false;
     }
 
     void FixedUpdate()
     {
         AcceptConnection();
-        foreach(Postbox postbox in postboxes)
+        foreach (Postbox postbox in postboxes)
         {
             postbox.ReceiveData();
         }

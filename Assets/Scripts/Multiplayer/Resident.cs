@@ -12,38 +12,54 @@ public class Resident : MonoBehaviour
 {
     [SerializeField] string ServerIP;
 
-    float count = 0;
+    public static Dictionary<byte, PostOffice.LetterHandler> letterHandlers;
 
     Postbox postbox;
 
     void Start()
     {
-        
+        letterHandlers = new Dictionary<byte, PostOffice.LetterHandler>()
+        {
+            {(byte)LetterType.WELCOME,HandleWelcome }
+        };
+
+        Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+        {
+            SendBufferSize = PostOffice.SocketBufferSize,
+            ReceiveBufferSize = PostOffice.SocketBufferSize
+        };
+        postbox = new Postbox(socket);
+        postbox.onLetter += (postbox, letter) =>
+        {
+            letterHandlers[letter.ReadByte()](postbox, letter);
+        };
+    }
+
+    void HandleWelcome(Postbox postbox, Letter letter)
+    {
+        ScreenConsole.Write("Connected");
+        postbox.Id = letter.ReadInt();
+        ScreenConsole.Write($"ID: {postbox.Id}");
+
+        letter.Release();
+    }
+
+    public void SetUsername(string username)
+    {
+        postbox.Username = username;
+    }
+
+    public void Connect()
+    {
+        ScreenConsole.Write("Connecting");
+        postbox.Connect(new IPEndPoint(IPAddress.Parse(ServerIP),PostOffice.Port));
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ScreenConsole.Write("Starting");
-            Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
-            {
-                SendBufferSize = PostOffice.SocketBufferSize,
-                ReceiveBufferSize = PostOffice.SocketBufferSize
-            };
-            ScreenConsole.Write("Connecting");
-            socket.Connect(new IPEndPoint(IPAddress.Parse(ServerIP), PostOffice.Port));
-            postbox = new Postbox(socket);
-        }
-        for (int i = 97; i <= 122; i++)
-        {
-            if (Input.GetKeyDown((KeyCode)i))
-            {
-                Letter letter = Letter.Get();
-                letter.Write((byte)LetterType.GREET);
-                letter.Write($"Hello, I pressed {(char)i}");
-                postbox.Send(letter);
-            }
+            postbox.Send(Letter.GetIntroduce(postbox.Username));
         }
     }
 

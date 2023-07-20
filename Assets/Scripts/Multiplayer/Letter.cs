@@ -12,7 +12,7 @@ using UnityEngine.Pool;
 //this assumes big endian
 public class Letter
 {
-    private static LinkedPool<Letter> pooledLetters = new LinkedPool<Letter>(() => new Letter(),(l)=> l.Clear());
+    private static LinkedPool<Letter> pooledLetters = new LinkedPool<Letter>(() => new Letter(),(letter)=> letter.Clear());
 
     public static readonly ushort HeaderSize = sizeof(ushort);
 
@@ -26,6 +26,24 @@ public class Letter
         pointer = HeaderSize;
     }
 
+    public static Letter GetWelcome(int id)
+    {
+        Letter letter = Get();
+        letter.Write(LetterType.WELCOME);
+        letter.Write(id);
+
+        return letter;
+    }
+
+    public static Letter GetIntroduce(string username)
+    {
+        Letter letter = Get();
+        letter.Write(LetterType.INTRODUCE);
+        letter.Write(username);
+        
+        return letter;
+    }
+
     public static Letter Get()
     {
         return pooledLetters.Get();
@@ -34,6 +52,11 @@ public class Letter
     public void Clear()
     {
         pointer = HeaderSize;
+    }
+
+    public void Release()
+    {
+        pooledLetters.Release(this);
     }
 
     public void Copy(byte[] buffer, int amount)
@@ -70,6 +93,16 @@ public class Letter
         byte value = bytes[pointer];
         pointer++;
         return value;
+    }
+
+    public void Write(LetterType value)
+    {
+        Write((byte)value);
+    }
+
+    public LetterType ReadType()
+    {
+        return (LetterType)ReadByte();
     }
 
     public void Write(float value)
