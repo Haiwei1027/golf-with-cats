@@ -11,6 +11,7 @@ using System.Net.Sockets;
 public class Resident : MonoBehaviour
 {
     [SerializeField] string ServerIP;
+    [SerializeField] bool useLoopback;
 
     public static Dictionary<byte, PostOffice.LetterHandler> letterHandlers;
 
@@ -37,11 +38,13 @@ public class Resident : MonoBehaviour
 
     void HandleWelcome(Postbox postbox, Letter letter)
     {
-        ScreenConsole.Write("Connected");
+        Debug.LogAssertion("Connected");
         postbox.Id = letter.ReadInt();
-        ScreenConsole.Write($"ID: {postbox.Id}");
+        Debug.LogAssertion($"ID: {postbox.Id}");
 
-        letter.Release();
+        letter.Clear();
+        letter.WriteIntroduce(postbox.Username);
+        postbox.Send(letter);
     }
 
     public void SetUsername(string username)
@@ -51,16 +54,13 @@ public class Resident : MonoBehaviour
 
     public void Connect()
     {
-        ScreenConsole.Write("Connecting");
-        postbox.Connect(new IPEndPoint(IPAddress.Parse(ServerIP),PostOffice.Port));
+        Debug.LogAssertion("Connecting");
+        postbox.Connect(new IPEndPoint(useLoopback ? IPAddress.Loopback : IPAddress.Parse(ServerIP),PostOffice.Port));
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            postbox.Send(Letter.GetIntroduce(postbox.Username));
-        }
+        
     }
 
     void FixedUpdate()

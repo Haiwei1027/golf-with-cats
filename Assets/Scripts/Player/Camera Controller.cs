@@ -57,8 +57,13 @@ public class CameraController : MonoBehaviour
         prevMousePos = Input.mousePosition;
     }
 
-    void UpdateCamera()
+    public void UpdateCamera()
     {
+        if (!cameraTransform)
+        {
+            cameraTransform = transform.GetChild(0);
+            camera = cameraTransform.GetComponent<Camera>();
+        }
         cameraTransform.localRotation = Quaternion.Euler(angleOfDepression, 0, 0);
         cameraTransform.localPosition = cameraTransform.localRotation * -Vector3.forward * cameraDistance;
         camera.orthographicSize = cameraSize;

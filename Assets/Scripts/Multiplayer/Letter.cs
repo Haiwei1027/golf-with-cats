@@ -26,22 +26,20 @@ public class Letter
         pointer = HeaderSize;
     }
 
-    public static Letter GetWelcome(int id)
+    public Letter WriteWelcome(int id)
     {
-        Letter letter = Get();
-        letter.Write(LetterType.WELCOME);
-        letter.Write(id);
+        Write(LetterType.WELCOME);
+        Write(id);
 
-        return letter;
+        return this;
     }
 
-    public static Letter GetIntroduce(string username)
+    public Letter WriteIntroduce(string username)
     {
-        Letter letter = Get();
-        letter.Write(LetterType.INTRODUCE);
-        letter.Write(username);
-        
-        return letter;
+        Write(LetterType.INTRODUCE);
+        Write(username);
+
+        return this;
     }
 
     public static Letter Get()

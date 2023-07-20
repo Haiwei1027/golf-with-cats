@@ -14,6 +14,7 @@ public class PostOffice : MonoBehaviour
     public static readonly int MaxPlayers = 10;
 
     private List<Postbox> postboxes = new List<Postbox>();
+    private List<Postbox> disconnected = new List<Postbox>();
 
     private Socket serverSocket;
 
@@ -29,26 +30,26 @@ public class PostOffice : MonoBehaviour
     {
         string username = letter.ReadString();
         postbox.Username = username;
-        Debug.LogError($"{username} Connected");
+        Debug.LogAssertion($"{username} Connected");
         letter.Release();
     }
 
     void Start()
     {
-        Debug.LogError("Initialising");
+        Debug.LogAssertion("Initialising");
 
         letterHandlers = new Dictionary<byte, LetterHandler>()
         {
             {(byte)LetterType.INTRODUCE, HandleIntroduce}
         };
 
-        Debug.LogError("Starting");
+        Debug.LogAssertion("Starting");
         serverSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = SocketBufferSize,
             ReceiveBufferSize = SocketBufferSize
         };
-        Debug.LogError("Binding");
+        Debug.LogAssertion("Binding");
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
         serverSocket.Listen(0);
         listening = true;
@@ -60,7 +61,7 @@ public class PostOffice : MonoBehaviour
         if (serverSocket == null) return;
         if (!serverSocket.IsBound) return;
         if (postboxes.Count >= MaxPlayers) return;
-        Debug.LogError("Accepting");
+        Debug.LogAssertion("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
         
@@ -78,14 +79,14 @@ public class PostOffice : MonoBehaviour
     void AcceptCallback(IAsyncResult result)
     {
         Socket clientSocket = serverSocket.EndAccept(result);
-        Debug.LogError("Accepted");
+        Debug.LogAssertion("Accepted");
         Postbox newPostbox = new Postbox(clientSocket);
         newPostbox.onLetter += (postbox, letter) =>
         {
             letterHandlers[letter.ReadByte()](postbox, letter);
         };
         newPostbox.Id = GenerateUserID();
-        Letter welcomeLetter = Letter.GetWelcome(newPostbox.Id);
+        Letter welcomeLetter = Letter.Get().WriteWelcome(newPostbox.Id);
         newPostbox.Send(welcomeLetter);
 
         postboxes.Add(newPostbox);
@@ -95,10 +96,22 @@ public class PostOffice : MonoBehaviour
     void FixedUpdate()
     {
         AcceptConnection();
+        bool stillConnected;
         foreach (Postbox postbox in postboxes)
         {
-            postbox.ReceiveData();
+            stillConnected = postbox.ReceiveData();
+            if (!stillConnected)
+            {
+                disconnected.Add(postbox);
+                Debug.Log($"{postbox.Username} Disconnected");
+                postbox.Close();
+            }
         }
+        foreach (Postbox postbox in disconnected)
+        {
+            postboxes.Remove(postbox);
+        }
+        disconnected.Clear();
     }
 
     void OnApplicationQuit()
