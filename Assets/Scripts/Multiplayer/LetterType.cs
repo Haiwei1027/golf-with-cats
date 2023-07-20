@@ -13,5 +13,21 @@ public enum LetterType : byte
     /// <summary>
     /// Letter for user to create a lobby
     /// </summary>
-    CREATETOWN
+    CREATETOWN,
+    /// <summary>
+    /// Letter for user to tell server they want to join a town
+    /// </summary>
+    JOINTOWN,
+    /// <summary>
+    /// Letter for server to tell user they joined a town and who's in the town
+    /// </summary>
+    TOWNWELCOME,
+    /// <summary>
+    /// Letter for user to tell server they want to leave town
+    /// </summary>
+    LEAVETOWN,
+    /// <summary>
+    /// Letter for user to tell server to start game
+    /// </summary>
+    STARTGAME,
 }

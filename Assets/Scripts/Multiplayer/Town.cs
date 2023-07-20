@@ -9,12 +9,12 @@ using System.Collections.Generic;
 public class Town
 {
 
-    Postbox[] residents;
+    List<Postbox> residents;
     private int id;
 
     public Town(int capacity)
     {
-        residents = new Postbox[capacity];
+        residents = new List<Postbox>();
         GenerateID();
     }
 
@@ -38,14 +38,17 @@ public class Town
 
     }
 
-    void Start()
+    void Initiate()
     {
         
     }
 
+    void Start()
+    {
 
+    }
 
-    void FixedUpdate()
+    void Update()
     {
         
     }

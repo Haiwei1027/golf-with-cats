@@ -42,6 +42,18 @@ public class Letter
         return this;
     }
 
+    public Letter WriteJoinTown(int townID)
+    {
+        Write(LetterType.JOINTOWN); 
+        Write(townID); 
+        return this;
+    }
+
+    public Letter WriteTownWelcome(Postbox[] residents)
+    {
+        
+    }
+
     public static Letter Get()
     {
         return pooledLetters.Get();
@@ -69,10 +81,11 @@ public class Letter
         return pointer;
     }
 
-    public void WriteHeader()
+    public Letter WriteHeader()
     {
         bytes[0] = (byte)((pointer - HeaderSize) >> 8);
         bytes[1] = (byte)(pointer - HeaderSize);
+        return this;
     }
 
     public static ushort ReadHeader(byte[] headerBytes)
@@ -80,10 +93,11 @@ public class Letter
         return (ushort)(headerBytes[1] | (byte)(headerBytes[1] << 8));
     }
 
-    public void Write(byte value)
+    public Letter Write(byte value)
     {
         bytes[pointer] = value;
         pointer++;
+        return this;
     }
 
     public byte ReadByte()
@@ -93,9 +107,10 @@ public class Letter
         return value;
     }
 
-    public void Write(LetterType value)
+    public Letter Write(LetterType value)
     {
         Write((byte)value);
+        return this;
     }
 
     public LetterType ReadType()
@@ -103,10 +118,11 @@ public class Letter
         return (LetterType)ReadByte();
     }
 
-    public void Write(float value)
+    public Letter Write(float value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
         pointer += 4;
+        return this;
     }
 
     public float ReadFloat()
@@ -117,10 +133,11 @@ public class Letter
 
     }
 
-    public void Write(int value)
+    public Letter Write(int value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
         pointer += 4;
+        return this;
     }
 
     public int ReadInt()
@@ -130,10 +147,11 @@ public class Letter
         return value;
     }
 
-    public void Write(char value)
+    public Letter Write(char value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
         pointer += 2;
+        return this;
     }
 
     public char ReadChar()
@@ -144,13 +162,14 @@ public class Letter
 
     }
 
-    public void Write(string value)
+    public Letter Write(string value)
     {
         Write(value.Length);
         foreach (char c in value)
         {
             Write(c);
         }
+        return this;
     }
 
     public string ReadString()
