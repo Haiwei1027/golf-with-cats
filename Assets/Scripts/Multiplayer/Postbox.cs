@@ -16,19 +16,24 @@ public class Postbox
 
     public event PostOffice.LetterHandler onLetter;
 
-    private int id;
-
-    public int Id
+    private ResidentRecord owner;
+    public ResidentRecord Owner
     {
-        get { return id; }
-        set { id = value; }
+        get { return owner; }
+        set { owner = value; }
     }
-    private string username;
-
-    public string Username
+    private void CreateSocket()
     {
-        get { return username; }
-        set { username = value; }
+        socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+        {
+            SendBufferSize = PostOffice.SocketBufferSize,
+            ReceiveBufferSize = PostOffice.SocketBufferSize
+        };
+    }
+
+    public Postbox()
+    {
+        CreateSocket();
     }
 
     public Postbox(Socket socket)
@@ -38,6 +43,10 @@ public class Postbox
 
     public void Connect(IPEndPoint endpoint)
     {
+        if (socket == null)
+        {
+            CreateSocket();
+        }
         socket.Connect(endpoint);
     }
 
@@ -50,7 +59,7 @@ public class Postbox
     {
         Letter letter = Letter.Get();
         letter.Copy(receiveBuffer, amount);
-        onLetter?.Invoke(this, letter);
+        onLetter?.Invoke(owner, letter);
     }
 
     public bool ReceiveData()

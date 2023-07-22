@@ -348,14 +348,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 4
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
+  m_KeyboardType: 1
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 4
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 14
@@ -551,7 +551,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectPanel: {fileID: 475168701}
   lobbyPanel: {fileID: 308925211}
-  townPanel: {fileID: 0}
+  townPanel: {fileID: 1460241154}
+  usernameList: {fileID: 323303815}
 --- !u!1001 &209879928
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2956,9 +2957,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6449c3e67af20fb4bb9e02e82fd0decf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  angleOfDepression: 50
-  cameraDistance: 10
-  cameraSize: 5
+  angleOfDepression: 64
+  cameraDistance: 12
+  cameraSize: 4
 --- !u!1 &1428174515
 GameObject:
   m_ObjectHideFlags: 0
@@ -3155,7 +3156,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3178,8 +3179,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1431237211}
-  m_LocalRotation: {x: 0.44463518, y: 0, z: 0, w: 0.8957118}
-  m_LocalPosition: {x: -0, y: 7.9652996, z: -6.045991}
+  m_LocalRotation: {x: 0.52991927, y: 0, z: 0, w: 0.8480481}
+  m_LocalPosition: {x: -0, y: 10.785528, z: -5.260453}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

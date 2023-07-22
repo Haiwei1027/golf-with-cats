@@ -11,14 +11,16 @@ public class PostOffice : MonoBehaviour
 {
     public static readonly int Port = 25569;
     public static readonly int SocketBufferSize = 1024 * 1024;
-    public static readonly int MaxPlayers = 10;
+    public static readonly int Capacity = 64;
 
-    private List<Postbox> postboxes = new List<Postbox>();
-    private List<Postbox> disconnected = new List<Postbox>();
+    private List<ResidentRecord> residents = new List<ResidentRecord>();
+    private List<ResidentRecord> leavers = new List<ResidentRecord>();
+
+    private List<Town> towns = new List<Town>();
 
     private Socket serverSocket;
 
-    public delegate void LetterHandler(Postbox postbox, Letter letter);
+    public delegate void LetterHandler(ResidentRecord sender, Letter letter);
     public static Dictionary<byte, LetterHandler> letterHandlers;
 
     private bool listening = false;
@@ -26,12 +28,52 @@ public class PostOffice : MonoBehaviour
 
     private System.Random randomGenerator;
 
-    public void HandleIntroduce(Postbox postbox, Letter letter)
+    #region Letter Handlers
+    public void HandleIntroduce(ResidentRecord sender, Letter letter)
     {
         string username = letter.ReadString();
-        postbox.Username = username;
+        sender.Username = username;
         Debug.LogAssertion($"{username} Connected");
         letter.Release();
+    }
+
+    public void HandleCreateTown(ResidentRecord sender, Letter letter)
+    {
+        towns.Add(new Town(sender, 4));
+    }
+
+    public void HandleJoinTown(ResidentRecord sender, Letter letter)
+    {
+        Town town = GetTown(letter.ReadInt());
+        town.Join(sender);
+    }
+
+    #endregion
+
+    public Town GetTown(int id)
+    {
+        foreach (Town t in towns)
+        {
+            if (t.Id == id)
+            {
+                return t;
+            }
+        }
+        Debug.LogAssertion($"No Town of ID {id} Was Found");
+        return null;
+    }
+
+    public ResidentRecord GetResident(int id)
+    {
+        foreach (ResidentRecord r in residents)
+        {
+            if (r.Id == id)
+            {
+                return r;
+            }
+        }
+        Debug.LogAssertion($"No Resident of ID {id} Was Found");
+        return null;
     }
 
     void Start()
@@ -40,7 +82,9 @@ public class PostOffice : MonoBehaviour
 
         letterHandlers = new Dictionary<byte, LetterHandler>()
         {
-            {(byte)LetterType.INTRODUCE, HandleIntroduce}
+            {(byte)LetterType.INTRODUCE, HandleIntroduce},
+            {(byte)LetterType.CREATETOWN, HandleCreateTown},
+            {(byte)LetterType.JOINTOWN,HandleJoinTown }
         };
 
         Debug.LogAssertion("Starting");
@@ -60,7 +104,7 @@ public class PostOffice : MonoBehaviour
         if (accepting || !listening) return;
         if (serverSocket == null) return;
         if (!serverSocket.IsBound) return;
-        if (postboxes.Count >= MaxPlayers) return;
+        if (residents.Count >= Capacity) return;
         Debug.LogAssertion("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
@@ -80,38 +124,46 @@ public class PostOffice : MonoBehaviour
     {
         Socket clientSocket = serverSocket.EndAccept(result);
         Debug.LogAssertion("Accepted");
+        
         Postbox newPostbox = new Postbox(clientSocket);
         newPostbox.onLetter += (postbox, letter) =>
         {
             letterHandlers[letter.ReadByte()](postbox, letter);
         };
-        newPostbox.Id = GenerateUserID();
-        Letter welcomeLetter = Letter.Get().WriteWelcome(newPostbox.Id);
+
+        int id = GenerateUserID();
+        Letter welcomeLetter = Letter.Get().WriteWelcome(id);
         newPostbox.Send(welcomeLetter);
 
-        postboxes.Add(newPostbox);
+        residents.Add(new ResidentRecord(newPostbox, id));
         accepting = false;
+    }
+
+    void Disconnect(ResidentRecord resident)
+    {
+        resident.Postbox.Close();
+        resident.Town.Leave(resident);   
     }
 
     void FixedUpdate()
     {
         AcceptConnection();
         bool stillConnected;
-        foreach (Postbox postbox in postboxes)
+        foreach (ResidentRecord resident in residents)
         {
-            stillConnected = postbox.ReceiveData();
+            stillConnected = resident.Postbox.ReceiveData();
             if (!stillConnected)
             {
-                disconnected.Add(postbox);
-                Debug.Log($"{postbox.Username} Disconnected");
-                postbox.Close();
+                leavers.Add(resident);
+                Debug.Log($"{resident.Username} Disconnected");
+                Disconnect(resident);
             }
         }
-        foreach (Postbox postbox in disconnected)
+        foreach (ResidentRecord leaver in leavers)
         {
-            postboxes.Remove(postbox);
+            residents.Remove(leaver);
         }
-        disconnected.Clear();
+        leavers.Clear();
     }
 
     void OnApplicationQuit()
@@ -120,9 +172,9 @@ public class PostOffice : MonoBehaviour
         {
             serverSocket.Close();
         }
-        foreach (Postbox postbox in postboxes)
+        foreach (ResidentRecord resident in residents)
         {
-            postbox.Close();
+            Disconnect(resident);
         }
     }
 }

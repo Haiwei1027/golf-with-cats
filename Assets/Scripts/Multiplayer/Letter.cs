@@ -49,9 +49,24 @@ public class Letter
         return this;
     }
 
-    public Letter WriteTownWelcome(Postbox[] residents)
+    public Letter WriteTownWelcome(List<ResidentRecord> residents, int townId)
     {
-        
+        Write(LetterType.TOWNWELCOME);
+        Write(townId);
+        Write(residents.Count);
+        foreach (ResidentRecord resident in residents)
+        {
+            Write(resident.Id);
+            Write(resident.Username);
+        }
+        return this;
+    }
+
+    public Letter WriteGoodbye(int id)
+    {
+        Write(LetterType.GOODBYE);
+        Write(id);
+        return this;
     }
 
     public static Letter Get()

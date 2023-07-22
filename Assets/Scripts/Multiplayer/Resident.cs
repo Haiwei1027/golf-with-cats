@@ -13,10 +13,13 @@ using UnityEngine.UIElements;
 /// </summary>
 public class Resident : MonoBehaviour
 {
+    public static Resident Instance { get; private set; }
+
     [SerializeField] string ServerIP;
     [SerializeField] bool useLoopback;
 
-    public static Dictionary<byte, PostOffice.LetterHandler> letterHandlers;
+    public delegate void LetterHandler(Letter letter);
+    public static Dictionary<byte, LetterHandler> letterHandlers;
 
     public static event Action onConnected;
     public static event Action onDisconnected;
@@ -24,25 +27,42 @@ public class Resident : MonoBehaviour
     public static event Action onJoinTown;
     public static event Action onLeaveTown;
 
+    ResidentRecord record;
+
+    List<ResidentRecord> townResidents = new List<ResidentRecord>();
+
     Postbox postbox;
 
     private bool connected;
 
     #region Letter Handlers
-    void HandleWelcome(Postbox postbox, Letter letter)
+    void HandleWelcome(Letter letter)
     {
         Debug.LogAssertion("Connected");
-        postbox.Id = letter.ReadInt();
-        Debug.LogAssertion($"ID: {postbox.Id}");
-        onConnected?.Invoke();
+        record.Id = letter.ReadInt();
+        Debug.LogAssertion($"ID: {record.Id}");
+        
         letter.Clear();
-        letter.WriteIntroduce(postbox.Username);
+        letter.WriteIntroduce(record.Username);
         postbox.Send(letter);
+
+        onConnected?.Invoke();
     }
 
-    void HandleTownWelcome(Postbox postbox, Letter letter)
+    void HandleTownWelcome(Letter letter)
     {
+        int townId = letter.ReadInt();
+        int population = letter.ReadInt();
+        for (int i = 0; i < population; i++)
+        {
+            ResidentRecord otherResident = new ResidentRecord(letter.ReadInt(), letter.ReadString());
+            otherResident.TownId = townId;
+            townResidents.Add(otherResident);
+        }
+        record.TownId = townId;
+        letter.Release();
 
+        onJoinTown?.Invoke();
     }
 
     #endregion
@@ -50,7 +70,7 @@ public class Resident : MonoBehaviour
     #region UI Methods
     public void Connect(TMP_InputField usernameField)
     {
-        postbox.Username = usernameField.text;
+        record.Username = usernameField.text;
         Debug.LogAssertion("Connecting");
         postbox.Connect(new IPEndPoint(useLoopback ? IPAddress.Loopback : IPAddress.Parse(ServerIP),PostOffice.Port));
     }
@@ -58,6 +78,8 @@ public class Resident : MonoBehaviour
     public void Disconnect()
     {
         postbox.Close();
+
+        onDisconnected?.Invoke();
     }
 
     public void JoinTown(TMP_InputField lobbycodeField)
@@ -79,27 +101,35 @@ public class Resident : MonoBehaviour
     public void LeaveTown()
     {
         postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
+
+        onLeaveTown?.Invoke();
     }
     #endregion
 
-    void Start()
+    void Initiate()
     {
-        letterHandlers = new Dictionary<byte, PostOffice.LetterHandler>()
+        letterHandlers = new Dictionary<byte, LetterHandler>()
         {
             {(byte)LetterType.WELCOME,HandleWelcome },
             {(byte)LetterType.TOWNWELCOME,HandleTownWelcome }
         };
 
-        Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
-        {
-            SendBufferSize = PostOffice.SocketBufferSize,
-            ReceiveBufferSize = PostOffice.SocketBufferSize
-        };
-        postbox = new Postbox(socket);
+        postbox = new Postbox();
         postbox.onLetter += (postbox, letter) =>
         {
-            letterHandlers[letter.ReadByte()](postbox, letter);
+            letterHandlers[letter.ReadByte()](letter);
         };
+        record = new ResidentRecord(postbox);
+    }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        Initiate();
     }
 
     void FixedUpdate()

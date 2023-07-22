@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// This class acts as a container for a group of clients playing together
@@ -9,46 +10,60 @@ using System.Collections.Generic;
 public class Town
 {
 
-    List<Postbox> residents;
+    List<ResidentRecord> residents;
+    int founderID;
     private int id;
+    public int Id { get; private set; }
+    private int capacity;
 
-    public Town(int capacity)
+    public Town(ResidentRecord founder,int capacity)
     {
-        residents = new List<Postbox>();
+        residents = new List<ResidentRecord>();
         GenerateID();
+
+        founderID = founder.Id;
+        Join(founder);
     }
 
     private void GenerateID()
     {
         id = new Random().Next(9999_9999 + 1);
     }
-
-    public int GetID()
+    public bool Join(ResidentRecord newResident)
     {
-        return id;
+        if (residents.Count >= capacity)
+        {
+            return false;
+        }
+
+        newResident.Town = this;
+        residents.Add(newResident);
+        
+        newResident.Postbox.Send(Letter.Get().WriteTownWelcome(residents, id));
+        return true;
     }
 
-    void Join(Postbox newResident)
+    public void Leave(ResidentRecord resident)
     {
-
+        resident.Town = null;
+        residents.Remove(resident);
+        if (resident.Id == founderID)
+        {
+            founderID = residents.First().Id;
+        }
     }
 
-    void Leave(Postbox resident)
-    {
-
-    }
-
-    void Initiate()
+    public void Initiate()
     {
         
     }
 
-    void Start()
+    public void Start()
     {
 
     }
 
-    void Update()
+    public void Update()
     {
         
     }

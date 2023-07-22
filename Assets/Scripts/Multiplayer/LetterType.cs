@@ -27,6 +27,10 @@ public enum LetterType : byte
     /// </summary>
     LEAVETOWN,
     /// <summary>
+    /// Letter for server to tell users who has just left
+    /// </summary>
+    GOODBYE,
+    /// <summary>
     /// Letter for user to tell server to start game
     /// </summary>
     STARTGAME,

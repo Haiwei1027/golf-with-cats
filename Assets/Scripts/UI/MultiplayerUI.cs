@@ -1,11 +1,32 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MultiplayerUI : MonoBehaviour
 {
-    [SerializeField] GameObject connectPanel;
-    [SerializeField] GameObject lobbyPanel;
-    [SerializeField] GameObject townPanel;
+    public static MultiplayerUI Instance { get; private set; }
 
+    [Header("Connect UI")]
+    [SerializeField] GameObject connectPanel;
+    [Header("Lobby UI")]
+    [SerializeField] GameObject lobbyPanel;
+    [Header("Town UI")]
+    [SerializeField] GameObject townPanel;
+    [SerializeField] TMP_Text usernameList;
+
+    private void UpdateNames(List<ResidentRecord> residents)
+    {
+        usernameList.text = "";
+        foreach (ResidentRecord resident in residents)
+        {
+            usernameList.text += resident.Username + "\n";
+        }
+    }
+
+    public void Awake()
+    {
+        Instance = this;
+    }
 
     public void Start()
     {
