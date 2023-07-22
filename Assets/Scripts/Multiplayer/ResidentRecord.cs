@@ -22,18 +22,11 @@ public class ResidentRecord
         get { return username; }
         set { username = value; }
     }
-    private Town town;
-    public Town Town
+    private TownRecord town;
+    public TownRecord Town
     {
         get { return town; }
-        set { town = value; townId = value.Id; }
-    }
-
-    private int townId;
-    public int TownId
-    {
-        get { return townId; }
-        set { townId = value; }
+        set { town = value; }
     }
 
     public ResidentRecord(Postbox postbox, int id)

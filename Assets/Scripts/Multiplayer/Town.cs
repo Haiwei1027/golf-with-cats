@@ -10,47 +10,49 @@ using System.Linq;
 public class Town
 {
 
-    List<ResidentRecord> residents;
-    int founderID;
-    private int id;
-    public int Id { get; private set; }
-    private int capacity;
+    TownRecord record;
 
-    public Town(ResidentRecord founder,int capacity)
+    public int Id { get { return record.Id; }}
+
+    public Town(ResidentRecord Mayor,int capacity)
     {
-        residents = new List<ResidentRecord>();
-        GenerateID();
-
-        founderID = founder.Id;
-        Join(founder);
+        record = new TownRecord(GenerateID());
+        record.Capacity = capacity;
+        record.MayorId = Mayor.Id;
+        Join(Mayor);
     }
 
-    private void GenerateID()
+    private int GenerateID()
     {
-        id = new Random().Next(9999_9999 + 1);
+        return new Random().Next(9999_9999 + 1);
     }
     public bool Join(ResidentRecord newResident)
     {
-        if (residents.Count >= capacity)
+        if (record.Population >= record.Capacity)
         {
             return false;
         }
 
-        newResident.Town = this;
-        residents.Add(newResident);
+        newResident.Town = record;
+        record.AddResident(newResident);
         
-        newResident.Postbox.Send(Letter.Get().WriteTownWelcome(residents, id));
+        newResident.Postbox.Send(Letter.Get().WriteTownWelcome(record));
         return true;
     }
 
     public void Leave(ResidentRecord resident)
     {
         resident.Town = null;
-        residents.Remove(resident);
-        if (resident.Id == founderID)
+        record.Residents.Remove(resident);
+        if (resident.Id == record.MayorId)
         {
-            founderID = residents.First().Id;
+            ElectNewMayor();
         }
+    }
+
+    public void ElectNewMayor()
+    {
+        record.MayorId = record.Residents.First().Id;
     }
 
     public void Initiate()

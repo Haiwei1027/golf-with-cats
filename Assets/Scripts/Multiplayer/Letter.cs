@@ -49,12 +49,12 @@ public class Letter
         return this;
     }
 
-    public Letter WriteTownWelcome(List<ResidentRecord> residents, int townId)
+    public Letter WriteTownWelcome(TownRecord record)
     {
         Write(LetterType.TOWNWELCOME);
-        Write(townId);
-        Write(residents.Count);
-        foreach (ResidentRecord resident in residents)
+        Write(record.Id);
+        Write(record.Population);
+        foreach (ResidentRecord resident in record.Residents)
         {
             Write(resident.Id);
             Write(resident.Username);

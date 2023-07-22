@@ -31,6 +31,10 @@ public class MultiplayerUI : MonoBehaviour
     public void Start()
     {
         OnDisconnected();
+        Resident.onConnected += OnConnected;
+        Resident.onDisconnected += OnDisconnected;
+        Resident.onJoinTown += OnJoinTown;
+        Resident.onLeaveTown += OnLeaveTown;
     }
     public void OnConnected()
     {
@@ -50,6 +54,7 @@ public class MultiplayerUI : MonoBehaviour
     {
         connectPanel.SetActive(false);
         lobbyPanel.SetActive(false);
+        UpdateNames(Resident.Instance.town.Residents);
         townPanel.SetActive(true);
     }
 

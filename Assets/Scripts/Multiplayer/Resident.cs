@@ -27,9 +27,8 @@ public class Resident : MonoBehaviour
     public static event Action onJoinTown;
     public static event Action onLeaveTown;
 
-    ResidentRecord record;
-
-    List<ResidentRecord> townResidents = new List<ResidentRecord>();
+    public ResidentRecord record;
+    public TownRecord town;
 
     Postbox postbox;
 
@@ -52,14 +51,21 @@ public class Resident : MonoBehaviour
     void HandleTownWelcome(Letter letter)
     {
         int townId = letter.ReadInt();
+        town = new TownRecord(townId);
         int population = letter.ReadInt();
         for (int i = 0; i < population; i++)
         {
-            ResidentRecord otherResident = new ResidentRecord(letter.ReadInt(), letter.ReadString());
-            otherResident.TownId = townId;
-            townResidents.Add(otherResident);
+            int id = letter.ReadInt();
+            if (id == record.Id)
+            {
+                ResidentRecord otherResident = new ResidentRecord(id, letter.ReadString());
+                town.AddResident(otherResident);
+            }
+            else
+            {
+                town.AddResident(record);
+            }
         }
-        record.TownId = townId;
         letter.Release();
 
         onJoinTown?.Invoke();
@@ -78,7 +84,8 @@ public class Resident : MonoBehaviour
     public void Disconnect()
     {
         postbox.Close();
-
+        record = null;
+        town = null;
         onDisconnected?.Invoke();
     }
 
@@ -101,7 +108,7 @@ public class Resident : MonoBehaviour
     public void LeaveTown()
     {
         postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
-
+        town = null;
         onLeaveTown?.Invoke();
     }
     #endregion

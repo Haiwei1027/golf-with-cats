@@ -142,7 +142,7 @@ public class PostOffice : MonoBehaviour
     void Disconnect(ResidentRecord resident)
     {
         resident.Postbox.Close();
-        resident.Town.Leave(resident);   
+        GetTown(resident.Town.Id).Leave(resident);   
     }
 
     void FixedUpdate()
