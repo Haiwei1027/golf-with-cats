@@ -57,6 +57,7 @@ public class Postbox
 
     private void HandleData(int amount)
     {
+        Debug.LogAssertion("Got Letter");
         Letter letter = Letter.Get();
         letter.Copy(receiveBuffer, amount);
         onLetter?.Invoke(owner, letter);
@@ -109,7 +110,7 @@ public class Postbox
         return true;
     }
 
-    public void Send(Letter letter)
+    public void Send(Letter letter, bool reusingLetter = false)
     {
         try
         {
@@ -117,8 +118,11 @@ public class Postbox
             Debug.LogAssertion("Prepared");
             socket.Send(sendBuffer, amount, SocketFlags.None);
             Debug.LogAssertion("Sent");
-            letter.Release();
-            Debug.LogAssertion("Released");
+            if (!reusingLetter)
+            {
+                letter.Release();
+                Debug.LogAssertion("Released");
+            }
         }
         catch (SocketException ex)
         {

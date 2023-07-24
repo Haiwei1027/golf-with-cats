@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class contains fields to store resident data independent of its logic
+/// </summary>
 public class ResidentRecord
 {
     private int id;

@@ -48,6 +48,11 @@ public class PostOffice : MonoBehaviour
         town.Join(sender);
     }
 
+    public void HandleLeaveTown(ResidentRecord sender, Letter letter)
+    {
+        GetTown(sender.Town.Id).Leave(sender);
+    }
+
     #endregion
 
     public Town GetTown(int id)
@@ -84,7 +89,8 @@ public class PostOffice : MonoBehaviour
         {
             {(byte)LetterType.INTRODUCE, HandleIntroduce},
             {(byte)LetterType.CREATETOWN, HandleCreateTown},
-            {(byte)LetterType.JOINTOWN,HandleJoinTown }
+            {(byte)LetterType.JOINTOWN,HandleJoinTown },
+            {(byte)LetterType.LEAVETOWN, HandleLeaveTown }
         };
 
         Debug.LogAssertion("Starting");

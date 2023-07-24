@@ -49,12 +49,13 @@ public class Letter
         return this;
     }
 
-    public Letter WriteTownWelcome(TownRecord record)
+    public Letter WriteTownWelcome(TownRecord town, ResidentRecord newResident)
     {
         Write(LetterType.TOWNWELCOME);
-        Write(record.Id);
-        Write(record.Population);
-        foreach (ResidentRecord resident in record.Residents)
+        Write(town.Id);
+        Write(newResident.Id);
+        Write(town.Population);
+        foreach (ResidentRecord resident in town.Residents)
         {
             Write(resident.Id);
             Write(resident.Username);
@@ -84,11 +85,22 @@ public class Letter
         pooledLetters.Release(this);
     }
 
+    /// <summary>
+    /// copies chunk of data into the letter directly without serialisation
+    /// </summary>
+    /// <param name="buffer">source array</param>
+    /// <param name="amount">number of bytes to be copies starting from the front of the source array</param>
     public void Copy(byte[] buffer, int amount)
     {
         Array.Copy(buffer,0,bytes,HeaderSize, amount);
     }
 
+    /// <summary>
+    /// Prepares the letter by writing the header and copies the header and paylod into the array
+    /// </summary>
+    /// <param name="array">the buffer receiving the data</param>
+    /// <param name="startIndex">the index the data will start to be written at</param>
+    /// <returns></returns>
     public ushort Ready(byte[] array, int startIndex)
     {
         WriteHeader();

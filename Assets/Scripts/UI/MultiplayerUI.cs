@@ -13,6 +13,7 @@ public class MultiplayerUI : MonoBehaviour
     [Header("Town UI")]
     [SerializeField] GameObject townPanel;
     [SerializeField] TMP_Text usernameList;
+    [SerializeField] TMP_Text roomIdLabel;
 
     private void UpdateNames(List<ResidentRecord> residents)
     {
@@ -50,11 +51,12 @@ public class MultiplayerUI : MonoBehaviour
         townPanel.SetActive(false);
     }
 
-    public void OnJoinTown()
+    public void OnJoinTown(int newResidentID)
     {
         connectPanel.SetActive(false);
         lobbyPanel.SetActive(false);
         UpdateNames(Resident.Instance.town.Residents);
+        roomIdLabel.text = $"Room ID: {Resident.Instance.town.Id}";
         townPanel.SetActive(true);
     }
 

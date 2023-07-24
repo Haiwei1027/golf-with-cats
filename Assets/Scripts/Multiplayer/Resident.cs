@@ -18,13 +18,12 @@ public class Resident : MonoBehaviour
     [SerializeField] string ServerIP;
     [SerializeField] bool useLoopback;
 
-    public delegate void LetterHandler(Letter letter);
-    public static Dictionary<byte, LetterHandler> letterHandlers;
+    public static Dictionary<byte, PostOffice.LetterHandler> letterHandlers;
 
     public static event Action onConnected;
     public static event Action onDisconnected;
 
-    public static event Action onJoinTown;
+    public static event Action<int> onJoinTown;
     public static event Action onLeaveTown;
 
     public ResidentRecord record;
@@ -35,7 +34,7 @@ public class Resident : MonoBehaviour
     private bool connected;
 
     #region Letter Handlers
-    void HandleWelcome(Letter letter)
+    void HandleWelcome(ResidentRecord _, Letter letter)
     {
         Debug.LogAssertion("Connected");
         record.Id = letter.ReadInt();
@@ -48,27 +47,46 @@ public class Resident : MonoBehaviour
         onConnected?.Invoke();
     }
 
-    void HandleTownWelcome(Letter letter)
+    void HandleTownWelcome(ResidentRecord _, Letter letter)
     {
         int townId = letter.ReadInt();
-        town = new TownRecord(townId);
+        int newResidentID = letter.ReadInt();
         int population = letter.ReadInt();
+
+        if (town == null)
+        {
+            town = new TownRecord(townId);
+        }
+        else if (townId == town.Id)
+        {
+            Debug.LogAssertion($"{newResidentID} Has Joined");
+        }
+        else
+        {
+            Debug.LogAssertion("Received Incorrect Town Welcome");
+        }
+
         for (int i = 0; i < population; i++)
         {
             int id = letter.ReadInt();
-            if (id == record.Id)
+            string username = letter.ReadString();
+            if (id != record.Id)
             {
-                ResidentRecord otherResident = new ResidentRecord(id, letter.ReadString());
+                ResidentRecord otherResident = new ResidentRecord(id, username);
                 town.AddResident(otherResident);
             }
             else
             {
+                
                 town.AddResident(record);
             }
         }
+
+
+
         letter.Release();
 
-        onJoinTown?.Invoke();
+        onJoinTown?.Invoke(newResidentID);
     }
 
     #endregion
@@ -107,6 +125,10 @@ public class Resident : MonoBehaviour
 
     public void LeaveTown()
     {
+        if (postbox == null)
+        {
+            Debug.LogAssertion("No Postbox");
+        }
         postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
         town = null;
         onLeaveTown?.Invoke();
@@ -115,16 +137,16 @@ public class Resident : MonoBehaviour
 
     void Initiate()
     {
-        letterHandlers = new Dictionary<byte, LetterHandler>()
+        letterHandlers = new Dictionary<byte, PostOffice.LetterHandler>()
         {
             {(byte)LetterType.WELCOME,HandleWelcome },
             {(byte)LetterType.TOWNWELCOME,HandleTownWelcome }
         };
 
         postbox = new Postbox();
-        postbox.onLetter += (postbox, letter) =>
+        postbox.onLetter += (_,letter) =>
         {
-            letterHandlers[letter.ReadByte()](letter);
+            letterHandlers[letter.ReadByte()](_,letter);
         };
         record = new ResidentRecord(postbox);
     }
@@ -143,10 +165,12 @@ public class Resident : MonoBehaviour
     {
         if (postbox != null) 
         {
-            if (connected && !postbox.ReceiveData())
+            bool stillConnected = postbox.ReceiveData();
+            if (connected && !stillConnected)
             {
                 onDisconnected?.Invoke();
             }
+            connected = stillConnected;
         }
     }
 

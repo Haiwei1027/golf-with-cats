@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using System.Linq;
 
 /// <summary>
@@ -19,12 +20,13 @@ public class Town
         record = new TownRecord(GenerateID());
         record.Capacity = capacity;
         record.MayorId = Mayor.Id;
+        Debug.LogAssertion($"Town {Id} created");
         Join(Mayor);
     }
 
     private int GenerateID()
     {
-        return new Random().Next(9999_9999 + 1);
+        return new System.Random().Next(999_999 + 1);
     }
     public bool Join(ResidentRecord newResident)
     {
@@ -36,14 +38,31 @@ public class Town
         newResident.Town = record;
         record.AddResident(newResident);
         
-        newResident.Postbox.Send(Letter.Get().WriteTownWelcome(record));
+        Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
+        SendToAllResidents(welcomeLetter);
+        Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
         return true;
+    }
+
+    public void SendToAllResidents(Letter letter)
+    {
+        SendToAllButOne(letter, -1);
+    }
+
+    public void SendToAllButOne(Letter letter, int except)
+    {
+        foreach (ResidentRecord resident in record.Residents)
+        {
+            if (resident.Id == except) continue;
+            resident.Postbox.Send(letter, true);
+        }
+        letter.Release();
     }
 
     public void Leave(ResidentRecord resident)
     {
-        resident.Town = null;
-        record.Residents.Remove(resident);
+        record.RemoveResident(resident);
+        Debug.LogAssertion($"Resident {resident.Id} left {record.Id}");
         if (resident.Id == record.MayorId)
         {
             ElectNewMayor();

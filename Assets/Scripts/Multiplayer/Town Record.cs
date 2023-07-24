@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class contains fields to store town data independent of its logic
+/// Also contains helper methods to modify the data
+/// </summary>
 public class TownRecord
 {
     private List<ResidentRecord> residents;
@@ -16,6 +20,13 @@ public class TownRecord
     public void AddResident(ResidentRecord resident)
     {
         if (resident == null) return;
+        foreach (ResidentRecord existingResident in residents)
+        {
+            if (existingResident.Id == resident.Id)
+            {
+                return;
+            }
+        }
         residents.Add(resident);
         resident.Town = this;
     }

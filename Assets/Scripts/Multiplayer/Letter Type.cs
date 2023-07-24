@@ -19,7 +19,7 @@ public enum LetterType : byte
     /// </summary>
     JOINTOWN,
     /// <summary>
-    /// Letter for server to tell user they joined a town and who's in the town
+    /// Letter for server to update users on town population
     /// </summary>
     TOWNWELCOME,
     /// <summary>
