@@ -14,7 +14,11 @@ public class Town
     TownRecord record;
 
     public int Id { get { return record.Id; }}
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="Mayor">the owner of the room/town</param>
+    /// <param name="capacity">capcity of the room/town</param>
     public Town(ResidentRecord Mayor,int capacity)
     {
         record = new TownRecord(GenerateID());
@@ -23,11 +27,19 @@ public class Town
         Debug.LogAssertion($"Town {Id} created");
         Join(Mayor);
     }
-
+    /// <summary>
+    /// Generates a random 6 digit room/town id
+    /// </summary>
+    /// <returns>6 digit room/town id</returns>
     private int GenerateID()
     {
         return new System.Random().Next(999_999 + 1);
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newResident"></param>
+    /// <returns></returns>
     public bool Join(ResidentRecord newResident)
     {
         if (record.Population >= record.Capacity)

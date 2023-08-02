@@ -218,7 +218,7 @@ public class Letter
 
     public Hologram ReadHologram(Hologram hologram)
     {
-        hologram.ReadData(bytes, pointer);
+        hologram.SetData(bytes, pointer);
         return hologram;
     }
 }
