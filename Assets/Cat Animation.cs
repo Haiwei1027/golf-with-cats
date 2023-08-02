@@ -20,7 +20,7 @@ public class CatAnimation : MonoBehaviour
 
     Vector3 LookAtPos(Vector3 lookPos)
     {
-        lookPos = GetMouseWorldPosition(); 
+        lookPos = GetMouseWorldPosition(); //temporary measure until we actually have objects to look for
         Vector3 currentRot = catbits.Head.eulerAngles;
         Vector3 currentPos = catbits.Head.position;
 
