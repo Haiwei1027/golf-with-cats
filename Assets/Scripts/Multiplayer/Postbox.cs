@@ -118,11 +118,12 @@ public class Postbox
             Debug.LogAssertion("Prepared");
             socket.Send(sendBuffer, amount, SocketFlags.None);
             Debug.LogAssertion("Sent");
-            if (!reusingLetter)
+            if (reusingLetter)
             {
-                letter.Release();
-                Debug.LogAssertion("Released");
+                return;
             }
+            letter.Release();
+            Debug.LogAssertion("Released");
         }
         catch (SocketException ex)
         {

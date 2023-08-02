@@ -8,8 +8,10 @@ public class MultiplayerUI : MonoBehaviour
 
     [Header("Connect UI")]
     [SerializeField] GameObject connectPanel;
+    [SerializeField] TMP_InputField usernameField;
     [Header("Lobby UI")]
     [SerializeField] GameObject lobbyPanel;
+    [SerializeField] TMP_InputField townField;
     [Header("Town UI")]
     [SerializeField] GameObject townPanel;
     [SerializeField] TMP_Text usernameList;
@@ -27,6 +29,16 @@ public class MultiplayerUI : MonoBehaviour
     public void Awake()
     {
         Instance = this;
+    }
+
+    public void Connect()
+    {
+        Resident.Connect(usernameField.text);
+    }
+
+    public void JoinTown()
+    {
+        Resident.JoinTown(townField.text);
     }
 
     public void Start()

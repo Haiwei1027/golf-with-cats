@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
-using TMPro;
 using System;
 using UnityEngine.UIElements;
 
@@ -92,48 +91,49 @@ public class Resident : MonoBehaviour
     #endregion
 
     #region UI Methods
-    public void Connect(TMP_InputField usernameField)
+    public static void Connect(string username)
     {
-        record.Username = usernameField.text;
+        Instance.record.Username = username;
         Debug.LogAssertion("Connecting");
-        postbox.Connect(new IPEndPoint(useLoopback ? IPAddress.Loopback : IPAddress.Parse(ServerIP),PostOffice.Port));
+        Instance.postbox.Connect(new IPEndPoint(Instance.useLoopback ? IPAddress.Loopback : IPAddress.Parse(Instance.ServerIP),PostOffice.Port));
     }
 
-    public void Disconnect()
+    public static void Disconnect()
     {
-        postbox.Close();
-        record = null;
-        town = null;
+        Instance.postbox.Close();
+        Instance.record = null;
+        Instance.town = null;
         onDisconnected?.Invoke();
     }
 
-    public void JoinTown(TMP_InputField lobbycodeField)
+    public static void JoinTown(string lobbyCode)
     {
-        int townID = int.Parse(lobbycodeField.text);
-        postbox.Send(Letter.Get().WriteJoinTown(townID));
+        int townID = int.Parse(lobbyCode);
+        Instance.postbox.Send(Letter.Get().WriteJoinTown(townID));
     }
 
-    public void CreateTown()
+    public static void CreateTown()
     {
-        postbox.Send(Letter.Get().Write(LetterType.CREATETOWN));
+        Instance.postbox.Send(Letter.Get().Write(LetterType.CREATETOWN));
     }
 
-    public void StartGame()
+    public static void StartGame()
     {
-        postbox.Send(Letter.Get().Write(LetterType.STARTGAME));
+        Instance.postbox.Send(Letter.Get().Write(LetterType.STARTGAME));
     }
 
-    public void LeaveTown()
+    public static void LeaveTown()
     {
-        if (postbox == null)
-        {
-            Debug.LogAssertion("No Postbox");
-        }
-        postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
-        town = null;
+        Instance.postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
+        Instance.town = null;
         onLeaveTown?.Invoke();
     }
     #endregion
+
+    public static void SendLetter(Letter letter)
+    {
+        Instance.postbox.Send(letter);
+    }
 
     void Initiate()
     {

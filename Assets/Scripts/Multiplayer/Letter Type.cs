@@ -34,4 +34,8 @@ public enum LetterType : byte
     /// Letter for user to tell server to start game
     /// </summary>
     STARTGAME,
+    HOLOGRAMCREATE,
+    HOLOGRAMUPDATE,
+    HOLOGRAMDESTROY,
+
 }

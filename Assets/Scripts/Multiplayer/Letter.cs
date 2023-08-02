@@ -209,4 +209,16 @@ public class Letter
         }
         return sb.ToString();
     }
+
+    public Letter Write(Hologram hologram)
+    {
+        pointer += hologram.GetData(bytes, pointer);
+        return this;
+    }
+
+    public Hologram ReadHologram(Hologram hologram)
+    {
+        hologram.ReadData(bytes, pointer);
+        return hologram;
+    }
 }
