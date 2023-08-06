@@ -62,12 +62,29 @@ public class Hologram
     }
 
     /// <summary>
-    /// Method for hologram database to cache creation letter and most recent update letter
+    /// Method for hologram database to cache creation letter
     /// </summary>
     /// <param name="letter"></param>
-    public void CacheData(Letter letter)
+    public void CacheCreate(Letter letter)
     {
-        
+        if (cachedCreate != null)
+        {
+            cachedCreate.Release();
+        }
+        cachedCreate = letter;
+    }
+
+    /// <summary>
+    /// Method for hologram database to cache most recent update letter
+    /// </summary>
+    /// <param name="letter"></param>
+    public void CacheUpdate(Letter letter)
+    {
+        if (cachedUpdate != null)
+        {
+            cachedUpdate.Release();
+        }
+        cachedUpdate = letter;
     }
 
     public void ApplyData()

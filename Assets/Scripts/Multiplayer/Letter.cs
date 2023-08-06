@@ -75,9 +75,10 @@ public class Letter
         return pooledLetters.Get();
     }
 
-    public void Clear()
+    public Letter Clear()
     {
         pointer = HeaderSize;
+        return this;
     }
 
     public void Release()

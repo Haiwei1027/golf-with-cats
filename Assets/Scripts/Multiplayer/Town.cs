@@ -12,7 +12,7 @@ public class Town
 {
 
     TownRecord record;
-    HologramDatabase hologramDatabase;
+    public HologramDatabase hologramDatabase { get; private set; }
 
     public int Id { get { return record.Id; }}
     /// <summary>
@@ -38,21 +38,6 @@ public class Town
         return new System.Random().Next(999_999 + 1);
     }
 
-    public void AddHologram(Letter letter)
-    {
-        hologramDatabase.Add(letter);
-    }
-
-    public void UpdateHologram(Letter letter)
-    {
-        hologramDatabase.Update(letter);
-    }
-
-    public void RemoveHologram(Letter letter)
-    {
-        hologramDatabase.Remove(letter);
-    }
-
     /// <summary>
     /// Add a resident to this town
     /// </summary>
@@ -74,18 +59,19 @@ public class Town
         return true;
     }
 
-    public void SendToAllResidents(Letter letter)
+    public void SendToAllResidents(Letter letter, bool release = true)
     {
-        SendToAllButOne(letter, -1);
+        SendToAllButOne(letter, -1, release);
     }
 
-    public void SendToAllButOne(Letter letter, int except)
+    public void SendToAllButOne(Letter letter, int except, bool release = true)
     {
         foreach (ResidentRecord resident in record.Residents)
         {
             if (resident.Id == except) continue;
             resident.Postbox.Send(letter, true);
         }
+        if (!release) { return; }
         letter.Release();
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -16,20 +17,33 @@ public class HologramDatabase
         this.town = town;
     }
 
-    public void Add(Letter letter)
+    public void Add(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        holograms.Add(new Hologram(id, prefabId));
+        Hologram hologram = new Hologram(id, prefabId);
+        hologram.CacheCreate(letter.Clear());
+        holograms.Add(hologram);
+        town.SendToAllButOne(letter, sender.Id, false);
     }
 
-    public void Update(Letter letter)
+    public void Update(ResidentRecord sender, Letter letter)
     {
-
+        ushort id = letter.ReadUShort();
+        Hologram hologram = holograms.Where(h => h.Id == id).FirstOrDefault();
+        if (hologram == null)
+        {
+            return;
+        }
+        hologram.CacheUpdate(letter.Clear());
+        town.SendToAllButOne(letter, sender.Id, false);
     }
 
-    public void Remove(Letter letter)
+    public void Remove(ResidentRecord sender, Letter letter)
     {
-
+        ushort id = letter.ReadUShort();
+        holograms.Remove(holograms.Where(h => h.Id == id).FirstOrDefault());
+        letter.Clear();
+        town.SendToAllButOne(letter,sender.Id);
     }
 }

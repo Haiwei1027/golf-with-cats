@@ -55,17 +55,17 @@ public class PostOffice : MonoBehaviour
 
     public void HandleHologramCreate(ResidentRecord sender, Letter letter)
     {
-        GetTown(sender.Town.Id).AddHologram(letter);
+        GetTown(sender.Town.Id).hologramDatabase.Add(sender,letter);
     }
 
     public void HandleHologramUpdate(ResidentRecord sender, Letter letter)
     {
-        GetTown(sender.Town.Id).UpdateHologram(letter);
+        GetTown(sender.Town.Id).hologramDatabase.Update(sender,letter);
     }
 
     public void HandleHologramDestroy(ResidentRecord sender, Letter letter)
     {
-        GetTown(sender.Town.Id).RemoveHologram(letter);
+        GetTown(sender.Town.Id).hologramDatabase.Remove(sender,letter);
     }
 
     #endregion
