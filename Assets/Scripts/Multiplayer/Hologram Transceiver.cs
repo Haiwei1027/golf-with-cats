@@ -7,5 +7,33 @@ using UnityEngine;
 /// </summary>
 public class HologramTransceiver : MonoBehaviour
 {
-    
+    [SerializeField] HologramType type;
+
+    private bool isOwner;
+
+    private Hologram hologram;
+    public Hologram Hologram { get { return hologram; } private set {  hologram = value; } }
+
+    public void Initiate(ushort id, ushort prefabId, bool isOwner)
+    {
+        this.isOwner = isOwner;
+        switch (type)
+        {
+            case HologramType.POSITION:
+                hologram = new PositionHologram(this,id,prefabId);
+                break;
+            default:
+                Debug.LogAssertion("Unknown Hologram Type");
+                break;
+        }
+        if (isOwner)
+        {
+            Letter letter = Letter.Get();
+            Resident.SendLetter(hologram.WriteCreate(letter));
+        }
+    }
+}
+public enum HologramType
+{
+    POSITION
 }

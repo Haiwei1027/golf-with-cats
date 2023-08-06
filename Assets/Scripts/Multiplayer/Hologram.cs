@@ -13,7 +13,7 @@ public class Hologram
     private ushort prefabId;
     public ushort PrefabId { get { return prefabId; } private set { prefabId = value; } }
 
-    private HologramTransceiver transceiver;
+    protected HologramTransceiver transceiver;
 
     private Letter cachedCreate;
     private Letter cachedUpdate;
@@ -21,34 +21,29 @@ public class Hologram
     /// <summary>
     /// Constructor for source hologram
     /// </summary>
-    public Hologram(HologramTransceiver transceiver)
+    public Hologram(HologramTransceiver transceiver, ushort id, ushort prefabId)
     {
         this.transceiver = transceiver;
-    }
-    /// <summary>
-    /// Constructor for remote hologram
-    /// </summary>
-    public Hologram(ushort id, ushort prefabId)
-    {
-        Id = id;
-        PrefabId = prefabId;
-    }
-    /// <summary>
-    /// Constructor for projected hologram
-    /// </summary>
-    public Hologram(HologramTransceiver transceiver, ushort id)
-    {
-        this.transceiver = transceiver;
-        Id = id;
+        this.id = id;
+        this.prefabId = prefabId;
     }
 
     /// <summary>
     /// Method for hologram system
     /// </summary>
     /// <param name="letter"></param>
-    public virtual Letter WriteCreate(Letter letter, ushort prefabId)
+    public Letter WriteCreate(Letter letter)
     {
-        PrefabId = prefabId;
+        letter.Write(LetterType.HOLOGRAMCREATE);
+        letter.Write(Id);
+        letter.Write(PrefabId);
+        return letter;
+    }
+
+    public Letter WriteDestroy(Letter letter)
+    {
+        letter.Write(LetterType.HOLOGRAMDESTROY);
+        letter.Write(Id);
         return letter;
     }
 
@@ -87,7 +82,7 @@ public class Hologram
         cachedUpdate = letter;
     }
 
-    public void ApplyData()
+    public virtual void ApplyData(Letter letter)
     {
 
     }
@@ -96,5 +91,39 @@ public class Hologram
     {
         cachedCreate?.Release();
         cachedUpdate?.Release();
+    }
+}
+
+public class PositionHologram : Hologram
+{
+    public PositionHologram(HologramTransceiver transceiver, ushort id, ushort prefabId) : base(transceiver, id, prefabId)
+    {
+
+    }
+
+    public override Letter WriteData(Letter letter)
+    {
+        letter.Write(LetterType.HOLOGRAMUPDATE);
+        letter.Write(Id);
+
+        Vector3 position = transceiver.transform.position;
+        letter.Write(position.x);
+        letter.Write(position.y);
+        letter.Write(position.z);
+        return letter;
+    }
+
+    public override void ApplyData(Letter letter)
+    {
+        ushort updateId = letter.ReadUShort();
+        if (Id != updateId) { return; }
+
+        Vector3 position = Vector3.zero;
+        position.x = letter.ReadFloat();
+        position.y = letter.ReadFloat();
+        position.z = letter.ReadFloat();
+        transceiver.transform.position = position;
+
+        letter.Release();
     }
 }

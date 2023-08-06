@@ -21,7 +21,7 @@ public class HologramDatabase
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        Hologram hologram = new Hologram(id, prefabId);
+        Hologram hologram = new Hologram(null, id, prefabId);
         hologram.CacheCreate(letter.Clear());
         holograms.Add(hologram);
         town.SendToAllButOne(letter, sender.Id, false);
@@ -42,7 +42,9 @@ public class HologramDatabase
     public void Remove(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
-        holograms.Remove(holograms.Where(h => h.Id == id).FirstOrDefault());
+        Hologram hologram = holograms.Where(h => h.Id == id).FirstOrDefault();
+        hologram.Clear();
+        holograms.Remove(hologram);
         letter.Clear();
         town.SendToAllButOne(letter,sender.Id);
     }
