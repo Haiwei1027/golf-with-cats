@@ -53,6 +53,21 @@ public class PostOffice : MonoBehaviour
         GetTown(sender.Town.Id).Leave(sender);
     }
 
+    public void HandleHologramCreate(ResidentRecord sender, Letter letter)
+    {
+        GetTown(sender.Town.Id).AddHologram(letter);
+    }
+
+    public void HandleHologramUpdate(ResidentRecord sender, Letter letter)
+    {
+        GetTown(sender.Town.Id).UpdateHologram(letter);
+    }
+
+    public void HandleHologramDestroy(ResidentRecord sender, Letter letter)
+    {
+        GetTown(sender.Town.Id).RemoveHologram(letter);
+    }
+
     #endregion
 
     public Town GetTown(int id)
@@ -90,7 +105,10 @@ public class PostOffice : MonoBehaviour
             {(byte)LetterType.INTRODUCE, HandleIntroduce},
             {(byte)LetterType.CREATETOWN, HandleCreateTown},
             {(byte)LetterType.JOINTOWN,HandleJoinTown },
-            {(byte)LetterType.LEAVETOWN, HandleLeaveTown }
+            {(byte)LetterType.LEAVETOWN, HandleLeaveTown },
+            {(byte)LetterType.HOLOGRAMCREATE, HandleHologramCreate},
+            {(byte)LetterType.HOLOGRAMUPDATE, HandleHologramUpdate},
+            {(byte)LetterType.HOLOGRAMDESTROY, HandleHologramDestroy }
         };
 
         Debug.LogAssertion("Starting");

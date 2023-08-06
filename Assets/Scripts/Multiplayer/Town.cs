@@ -12,6 +12,7 @@ public class Town
 {
 
     TownRecord record;
+    HologramDatabase hologramDatabase;
 
     public int Id { get { return record.Id; }}
     /// <summary>
@@ -24,6 +25,7 @@ public class Town
         record = new TownRecord(GenerateID());
         record.Capacity = capacity;
         record.MayorId = Mayor.Id;
+        hologramDatabase = new HologramDatabase(this);
         Debug.LogAssertion($"Town {Id} created");
         Join(Mayor);
     }
@@ -35,8 +37,24 @@ public class Town
     {
         return new System.Random().Next(999_999 + 1);
     }
+
+    public void AddHologram(Letter letter)
+    {
+        hologramDatabase.Add(letter);
+    }
+
+    public void UpdateHologram(Letter letter)
+    {
+        hologramDatabase.Update(letter);
+    }
+
+    public void RemoveHologram(Letter letter)
+    {
+        hologramDatabase.Remove(letter);
+    }
+
     /// <summary>
-    /// 
+    /// Add a resident to this town
     /// </summary>
     /// <param name="newResident"></param>
     /// <returns></returns>

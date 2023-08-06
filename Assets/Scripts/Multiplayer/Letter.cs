@@ -148,14 +148,14 @@ public class Letter
     public Letter Write(float value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
-        pointer += 4;
+        pointer += sizeof(float);
         return this;
     }
 
     public float ReadFloat()
     {
         float value = BitConverter.ToSingle(bytes, pointer);
-        pointer += 4;
+        pointer += sizeof(float);
         return value;
 
     }
@@ -163,28 +163,28 @@ public class Letter
     public Letter Write(int value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
-        pointer += 4;
+        pointer += sizeof(int);
         return this;
     }
 
     public int ReadInt()
     {
         int value = BitConverter.ToInt32(bytes, pointer);
-        pointer += 4;
+        pointer += sizeof(int);
         return value;
     }
 
     public Letter Write(char value)
     {
         BitConverter.GetBytes(value).CopyTo(bytes, pointer);
-        pointer += 2;
+        pointer += sizeof(char);
         return this;
     }
 
     public char ReadChar()
     {
         char value = BitConverter.ToChar(bytes, pointer);
-        pointer += 2;
+        pointer += sizeof(char);
         return value;
 
     }
@@ -210,15 +210,17 @@ public class Letter
         return sb.ToString();
     }
 
-    public Letter Write(Hologram hologram)
+    public Letter Write(ushort value)
     {
-        pointer += hologram.GetData(bytes, pointer);
+        BitConverter.GetBytes(value).CopyTo(bytes, pointer);
+        pointer += sizeof(ushort);
         return this;
     }
 
-    public Hologram ReadHologram(Hologram hologram)
+    public ushort ReadUShort()
     {
-        hologram.SetData(bytes, pointer);
-        return hologram;
+        ushort value = BitConverter.ToUInt16(bytes, pointer);
+        pointer += sizeof(ushort);
+        return value;
     }
 }
