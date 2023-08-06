@@ -96,6 +96,11 @@ public class PostOffice : MonoBehaviour
         return null;
     }
 
+    public void Awake()
+    {
+        Application.runInBackground = true;
+    }
+
     void Start()
     {
         Debug.LogAssertion("Initialising");
