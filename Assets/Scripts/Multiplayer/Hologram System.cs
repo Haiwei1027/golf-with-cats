@@ -26,9 +26,34 @@ public class HologramSystem : MonoBehaviour
 
     private List<HologramTransceiver> transceivers;
 
+    private int tickCounter;
+
     public void Awake()
     {
         Instance = this; 
+    }
+
+    public void Start()
+    {
+        transceivers = new List<HologramTransceiver>();
+    }
+
+    public void FixedUpdate()
+    {
+        int i=0;
+        
+        foreach (HologramTransceiver transceiver in transceivers)
+        {
+            if (!transceiver.isOwner) continue;
+            if ((tickCounter - (i/2)) % transceiver.updateInterval == 0)
+            {
+                Letter updateLetter = Letter.Get();
+                transceiver.Hologram.WriteData(updateLetter);
+                Resident.SendLetter(updateLetter);
+            }
+            i++;
+        }
+        tickCounter++;
     }
 
     private static ushort GenerateHologramId()
@@ -40,6 +65,7 @@ public class HologramSystem : MonoBehaviour
     {
         HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
         ushort id = GenerateHologramId();
+        Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
         transceiver.Initiate(id, prefabId, true);
         Instance.transceivers.Add(transceiver);
     }
@@ -48,7 +74,10 @@ public class HologramSystem : MonoBehaviour
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
+        Debug.LogAssertion($"received {id}, {prefabId}");
+        HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
+        if (transceiver != null) { return; }
+        transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
         transceiver.Initiate(id,prefabId,false);
         Instance.transceivers.Add(transceiver);
         letter.Release();
