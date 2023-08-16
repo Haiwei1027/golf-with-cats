@@ -57,9 +57,9 @@ public class Postbox
 
     private void HandleData(int amount)
     {
-        Debug.LogAssertion("Got Letter");
         Letter letter = Letter.Get();
         letter.Copy(receiveBuffer, amount);
+        Debug.LogAssertion("Got Letter " + (LetterType)receiveBuffer[0]);
         onLetter?.Invoke(owner, letter);
     }
 
@@ -115,7 +115,7 @@ public class Postbox
         try
         {
             ushort amount = letter.Ready(sendBuffer, 0);
-            Debug.LogAssertion("Prepared");
+            Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
             socket.Send(sendBuffer, amount, SocketFlags.None);
             Debug.LogAssertion("Sent");
             if (reusingLetter)

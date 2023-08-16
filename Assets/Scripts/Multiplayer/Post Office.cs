@@ -60,6 +60,8 @@ public class PostOffice : MonoBehaviour
 
     public void HandleHologramUpdate(ResidentRecord sender, Letter letter)
     {
+        if (GetTown(sender.Town.Id) == null) { Debug.LogAssertion("Town is null"); }
+        if (GetTown(sender.Town.Id).hologramDatabase == null) { Debug.LogAssertion("HologramDataBase is null"); }
         GetTown(sender.Town.Id).hologramDatabase.Update(sender,letter);
     }
 
