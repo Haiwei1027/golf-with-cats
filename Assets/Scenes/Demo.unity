@@ -379,19 +379,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1876203544}
-        m_TargetAssemblyTypeName: Resident, Assembly-CSharp
-        m_MethodName: SetUsername
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -490,11 +478,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 146184969}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.341668, y: -2.703007, z: 4.1191363}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1189624361}
+  m_Father: {fileID: 315240577}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &200982281
@@ -513,7 +501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &200982282
 RectTransform:
   m_ObjectHideFlags: 0
@@ -550,9 +538,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectPanel: {fileID: 475168701}
-  usernameField: {fileID: 0}
+  usernameField: {fileID: 124175549}
   lobbyPanel: {fileID: 308925211}
-  townField: {fileID: 0}
+  townField: {fileID: 1842277282}
   townPanel: {fileID: 1460241154}
   usernameList: {fileID: 323303815}
   roomIdLabel: {fileID: 1356716528}
@@ -1039,7 +1027,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 262448964}
-  - component: {fileID: 262448966}
   - component: {fileID: 262448965}
   m_Layer: 0
   m_Name: Hologram
@@ -1072,21 +1059,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 262448963}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acd512454581eff4da30fe5dc3bba875, type: 3}
+  m_Script: {fileID: 11500000, guid: 69c62e00065da5146a00bc96a3604807, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &262448966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262448963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4354d84f632ad4bab2842f7e76f814, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 3498980797890252319, guid: e823cc9149917f64090bed2e3d34f7e8, type: 3}
 --- !u!1 &286483388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,10 +1148,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1876203544}
-        m_TargetAssemblyTypeName: Resident, Assembly-CSharp
+      - m_Target: {fileID: 200982283}
+        m_TargetAssemblyTypeName: MultiplayerUI, Assembly-CSharp
         m_MethodName: Connect
-        m_Mode: 5
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1325,11 +1302,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 315240576}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.341668, y: 2.703007, z: -4.1191363}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1830737715}
+  - {fileID: 146184971}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1848,6 +1826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15420c52b84d06d44b18c4fd90df63e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
 --- !u!114 &721263809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1855,7 +1834,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 721263807}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32a1e05e920ddb240a37ac3fac5960e4, type: 3}
   m_Name: 
@@ -2371,13 +2350,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1876203544}
-        m_TargetAssemblyTypeName: Resident, Assembly-CSharp
+      - m_Target: {fileID: 200982283}
+        m_TargetAssemblyTypeName: MultiplayerUI, Assembly-CSharp
         m_MethodName: JoinTown
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1842277282}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2588,7 +2567,6 @@ Transform:
   - {fileID: 2058916120}
   - {fileID: 494790305}
   - {fileID: 209879929}
-  - {fileID: 146184971}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3983,19 +3961,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1876203544}
-        m_TargetAssemblyTypeName: Resident, Assembly-CSharp
-        m_MethodName: SetUsername
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4184,7 +4150,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1876203544}
         m_TargetAssemblyTypeName: Resident, Assembly-CSharp
-        m_MethodName: Connect
+        m_MethodName: StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

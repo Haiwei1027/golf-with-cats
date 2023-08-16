@@ -12,6 +12,7 @@ public class Town
 {
 
     TownRecord record;
+    public HologramDatabase hologramDatabase { get; private set; }
 
     public int Id { get { return record.Id; }}
     /// <summary>
@@ -24,6 +25,7 @@ public class Town
         record = new TownRecord(GenerateID());
         record.Capacity = capacity;
         record.MayorId = Mayor.Id;
+        hologramDatabase = new HologramDatabase(this);
         Debug.LogAssertion($"Town {Id} created");
         Join(Mayor);
     }
@@ -35,8 +37,9 @@ public class Town
     {
         return new System.Random().Next(999_999 + 1);
     }
+
     /// <summary>
-    /// 
+    /// Add a resident to this town
     /// </summary>
     /// <param name="newResident"></param>
     /// <returns></returns>
@@ -52,22 +55,38 @@ public class Town
         
         Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
         SendToAllResidents(welcomeLetter);
+        hologramDatabase.Joined(newResident);
         Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
         return true;
     }
 
-    public void SendToAllResidents(Letter letter)
+    public void SendToAllResidents(Letter letter, bool release = true)
     {
-        SendToAllButOne(letter, -1);
+        SendToAllButOne(letter, -1, release);
     }
 
-    public void SendToAllButOne(Letter letter, int except)
+    public void SendToAllButOne(Letter letter, int except, bool release = true)
     {
         foreach (ResidentRecord resident in record.Residents)
         {
             if (resident.Id == except) continue;
             resident.Postbox.Send(letter, true);
         }
+        if (!release) { return; }
+        letter.Release();
+    }
+
+    public void SendTo(Letter letter, int id, bool release = true)
+    {
+        foreach (ResidentRecord resident in record.Residents)
+        {
+            if (resident.Id == id)
+            {
+                resident.Postbox.Send(letter, !release);
+                break;
+            }
+        }
+        if (!release) { return; }
         letter.Release();
     }
 

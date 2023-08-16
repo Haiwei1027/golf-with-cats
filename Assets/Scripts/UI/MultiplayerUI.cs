@@ -58,6 +58,7 @@ public class MultiplayerUI : MonoBehaviour
 
     public void OnDisconnected()
     {
+        Debug.LogAssertion("Disconnected");
         connectPanel.SetActive(true);
         lobbyPanel.SetActive(false);
         townPanel.SetActive(false);
@@ -70,6 +71,18 @@ public class MultiplayerUI : MonoBehaviour
         UpdateNames(Resident.Instance.town.Residents);
         roomIdLabel.text = $"Room ID: {Resident.Instance.town.Id}";
         townPanel.SetActive(true);
+
+        if (newResidentID == Resident.Instance.record.Id)
+        {
+            // self join
+            HologramSystem.Instantiate(0);
+        }
+        else
+        {
+            // another player
+            
+        }
+
     }
 
     public void OnLeaveTown()

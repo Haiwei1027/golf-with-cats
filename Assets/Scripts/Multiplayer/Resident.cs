@@ -140,7 +140,10 @@ public class Resident : MonoBehaviour
         letterHandlers = new Dictionary<byte, PostOffice.LetterHandler>()
         {
             {(byte)LetterType.WELCOME,HandleWelcome },
-            {(byte)LetterType.TOWNWELCOME,HandleTownWelcome }
+            {(byte)LetterType.TOWNWELCOME,HandleTownWelcome },
+            {(byte)LetterType.HOLOGRAMCREATE, HologramSystem.HandleCreate },
+            {(byte)LetterType.HOLOGRAMUPDATE, HologramSystem.HandleUpdate },
+            {(byte)LetterType.HOLOGRAMDESTROY, HologramSystem.HandleDestroy },
         };
 
         postbox = new Postbox();
