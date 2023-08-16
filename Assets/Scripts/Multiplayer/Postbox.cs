@@ -75,10 +75,10 @@ public class Postbox
                 // try receive content
                 if (expectLetterLength > 0 )
                 {
-                    Debug.LogAssertion("Expect " + expectLetterLength);
+                    //Debug.LogAssertion("Expect " + expectLetterLength);
                     if (socket.Available >= expectLetterLength)
                     {
-                        Debug.LogAssertion("Availiable " + socket.Available);
+                        //Debug.LogAssertion("Availiable " + socket.Available);
                         receivedLetterSize = socket.Receive(receiveBuffer, expectLetterLength, SocketFlags.None);
                         expectLetterLength = 0;
                         moreLetters = true;
@@ -88,7 +88,7 @@ public class Postbox
                 // try receive header
                 else if (socket.Available >= Letter.HeaderSize)
                 {
-                    Debug.LogAssertion("Header");
+                    //Debug.LogAssertion("Header");
                     socket.Receive(headerBytes, Letter.HeaderSize, SocketFlags.None);
                     expectLetterLength = Letter.ReadHeader(headerBytes);
                     moreLetters = true;
@@ -117,13 +117,13 @@ public class Postbox
             ushort amount = letter.Ready(sendBuffer, 0);
             Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
             socket.Send(sendBuffer, amount, SocketFlags.None);
-            Debug.LogAssertion("Sent");
+            //Debug.LogAssertion("Sent");
             if (reusingLetter)
             {
                 return;
             }
             letter.Release();
-            Debug.LogAssertion("Released");
+            //Debug.LogAssertion("Released");
         }
         catch (SocketException ex)
         {

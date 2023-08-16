@@ -34,19 +34,25 @@ public class HologramDatabase
         holograms.Add(hologram);
         town.SendToAllButOne(letter, sender.Id, false);
         Debug.LogAssertion($"Sent {id} {prefabId} to all but {sender.Id}");
+        Debug.LogAssertion(holograms.Count);
+        foreach (Hologram h in holograms)
+        {
+            Debug.LogAssertion(h.Id);
+        }
     }
 
     public void Update(ResidentRecord sender, Letter letter)
     {
         if (letter == null) { Debug.LogAssertion("Null letter"); }
         ushort id = letter.ReadUShort();
-        Hologram hologram = holograms.Where(h => h.Id == id).FirstOrDefault();
+        Hologram hologram = holograms.Find(h => h.Id == id);
         if (hologram == null)
         {
             return;
         }
         hologram.CacheUpdate(letter);
         town.SendToAllButOne(letter, sender.Id, false);
+        Debug.LogAssertion($"Sent {id} to all but {sender.Id}");
     }
 
     public void Remove(ResidentRecord sender, Letter letter)

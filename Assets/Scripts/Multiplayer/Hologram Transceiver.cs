@@ -12,6 +12,8 @@ public class HologramTransceiver : MonoBehaviour
     public bool isOwner { get; private set; }
     public ushort Id { get { return hologram.Id; } }
 
+    public ushort ID;
+
     public int updateInterval;
 
     private Hologram hologram;
@@ -19,6 +21,7 @@ public class HologramTransceiver : MonoBehaviour
 
     public void Initiate(ushort id, ushort prefabId, bool isOwner)
     {
+        ID = id;
         this.isOwner = isOwner;
         switch (type)
         {

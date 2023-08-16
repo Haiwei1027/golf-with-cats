@@ -59,10 +59,10 @@ public class Hologram
     }
 
     /// <summary>
-    /// Method for hologram database to cache creation letter
+    /// Method for hologram database to cache create data to send to new players
     /// </summary>
     /// <param name="letter"></param>
-    public void CacheCreate(Letter letter)
+    public virtual void CacheCreate(Letter letter)
     {
         if (cachedCreate != null)
         {
@@ -72,10 +72,10 @@ public class Hologram
     }
 
     /// <summary>
-    /// Method for hologram database to cache most recent update letter
+    /// Method for hologram database to cache most recent update data for new players
     /// </summary>
     /// <param name="letter"></param>
-    public void CacheUpdate(Letter letter)
+    public virtual void CacheUpdate(Letter letter)
     {
         if (cachedUpdate != null)
         {
@@ -109,6 +109,7 @@ public class PositionHologram : Hologram
         letter.Write(Id);
 
         Vector3 position = transceiver.transform.position;
+        Debug.LogAssertion($"Sending {Id} {position}");
         letter.Write(position.x);
         letter.Write(position.y);
         letter.Write(position.z);
@@ -121,6 +122,7 @@ public class PositionHologram : Hologram
         position.x = letter.ReadFloat();
         position.y = letter.ReadFloat();
         position.z = letter.ReadFloat();
+        Debug.LogAssertion($"Received {position}");
         transceiver.transform.position = position;
 
         letter.Release();

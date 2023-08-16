@@ -74,7 +74,7 @@ public class HologramSystem : MonoBehaviour
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        Debug.LogAssertion($"received {id}, {prefabId}");
+        Debug.LogAssertion($"Received create {id} {prefabId}");
         HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
         if (transceiver != null) { return; }
         transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
@@ -86,6 +86,7 @@ public class HologramSystem : MonoBehaviour
     public static void HandleUpdate(ResidentRecord _, Letter letter)
     {
         ushort id = letter.ReadUShort();
+        Debug.LogAssertion($"Received Update {id}");
         HologramTransceiver transceiver = Instance.transceivers.Find(t => t.Id == id);
         transceiver.Hologram.ApplyData(letter);
     }
