@@ -9,13 +9,17 @@ public class HologramTransceiver : MonoBehaviour
 {
     [SerializeField] HologramType type;
 
-    private bool isOwner;
+    public bool isOwner { get; private set; }
+    public int Id { get { return hologram.Id; } }
+
+    public int updateInterval;
 
     private Hologram hologram;
     public Hologram Hologram { get { return hologram; } private set {  hologram = value; } }
 
     public void Initiate(ushort id, ushort prefabId, bool isOwner)
     {
+        if (updateInterval <= 0) { Debug.LogAssertion($"{name} has sub or zero update interval"); enabled = false;  return; }
         this.isOwner = isOwner;
         switch (type)
         {
