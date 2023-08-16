@@ -17,25 +17,35 @@ public class HologramDatabase
         this.town = town;
     }
 
+    public void Joined(ResidentRecord newResident)
+    {
+        foreach (var hologram in holograms)
+        {
+            town.SendTo(hologram.CachedCreate, newResident.Id);
+        }
+    }
+
     public void Add(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
         Hologram hologram = new Hologram(null, id, prefabId);
-        hologram.CacheCreate(letter.Clear());
+        hologram.CacheCreate(letter);
         holograms.Add(hologram);
         town.SendToAllButOne(letter, sender.Id, false);
+        Debug.LogAssertion($"Sent {id} {prefabId} to all but {sender.Id}");
     }
 
     public void Update(ResidentRecord sender, Letter letter)
     {
+        if (letter == null) { Debug.LogAssertion("Null letter"); }
         ushort id = letter.ReadUShort();
         Hologram hologram = holograms.Where(h => h.Id == id).FirstOrDefault();
         if (hologram == null)
         {
             return;
         }
-        hologram.CacheUpdate(letter.Clear());
+        hologram.CacheUpdate(letter);
         town.SendToAllButOne(letter, sender.Id, false);
     }
 
