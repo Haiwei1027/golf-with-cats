@@ -23,15 +23,7 @@ public class HologramTransceiver : MonoBehaviour
     {
         ID = id;
         this.isOwner = isOwner;
-        switch (type)
-        {
-            case HologramType.POSITION:
-                hologram = new PositionHologram(this,id,prefabId);
-                break;
-            default:
-                Debug.LogAssertion("Unknown Hologram Type");
-                break;
-        }
+        hologram = Hologram.CreateHologram(type, this, id, prefabId);
         if (isOwner)
         {
             Letter letter = Letter.Get();
@@ -39,7 +31,8 @@ public class HologramTransceiver : MonoBehaviour
         }
     }
 }
-public enum HologramType
+public enum HologramType : byte
 {
-    POSITION
+    POSITION,
+    TRANSFORM
 }

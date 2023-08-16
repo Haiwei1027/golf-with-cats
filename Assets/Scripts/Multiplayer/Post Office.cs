@@ -68,6 +68,11 @@ public class PostOffice : MonoBehaviour
         GetTown(sender.Town.Id).hologramDatabase.Remove(sender,letter);
     }
 
+    public void HandleStartGame(ResidentRecord sender, Letter letter)
+    {
+        GetTown(sender.Town.Id).Start(sender, letter);
+    }
+
     #endregion
 
     public Town GetTown(int id)
@@ -113,7 +118,8 @@ public class PostOffice : MonoBehaviour
             {(byte)LetterType.LEAVETOWN, HandleLeaveTown },
             {(byte)LetterType.HOLOGRAMCREATE, HandleHologramCreate},
             {(byte)LetterType.HOLOGRAMUPDATE, HandleHologramUpdate},
-            {(byte)LetterType.HOLOGRAMDESTROY, HandleHologramDestroy }
+            {(byte)LetterType.HOLOGRAMDESTROY, HandleHologramDestroy },
+            {(byte)LetterType.STARTGAME, HandleStartGame }
         };
 
         Debug.LogAssertion("Starting");
@@ -193,6 +199,11 @@ public class PostOffice : MonoBehaviour
             residents.Remove(leaver);
         }
         leavers.Clear();
+
+        foreach (Town town in towns)
+        {
+            town.Update();
+        }
     }
 
     void OnApplicationQuit()

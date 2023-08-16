@@ -15,6 +15,9 @@ public class Town
     public HologramDatabase hologramDatabase { get; private set; }
 
     public int Id { get { return record.Id; }}
+
+    private bool started = false;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -70,7 +73,7 @@ public class Town
         foreach (ResidentRecord resident in record.Residents)
         {
             if (resident.Id == except) continue;
-            resident.Postbox.Send(letter, true);
+            resident.Postbox.Send(letter, false);
         }
         if (!release) { return; }
         letter.Release();
@@ -82,7 +85,7 @@ public class Town
         {
             if (resident.Id == id)
             {
-                resident.Postbox.Send(letter, !release);
+                resident.Postbox.Send(letter, release);
                 break;
             }
         }
@@ -105,18 +108,17 @@ public class Town
         record.MayorId = record.Residents.First().Id;
     }
 
-    public void Initiate()
+    public void Start(ResidentRecord sender, Letter letter)
     {
-        
-    }
+        if (sender.Id != record.MayorId) { return; }
 
-    public void Start()
-    {
+        SendToAllButOne(Letter.Get().Write(LetterType.STARTGAME), sender.Id);
 
+        started = true;
     }
 
     public void Update()
     {
-        
+        if (!started) { return; }
     }
 }

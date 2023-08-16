@@ -26,6 +26,19 @@ public class Letter
         pointer = HeaderSize;
     }
 
+    public string DebugBytes()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(ReadHeader(bytes));
+        foreach (byte b in bytes)
+        {
+            sb.Append($" {b} ");
+        }
+
+        return sb.ToString();
+    }
+
     public Letter WriteWelcome(int id)
     {
         Write(LetterType.WELCOME);

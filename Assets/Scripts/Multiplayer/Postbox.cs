@@ -110,15 +110,18 @@ public class Postbox
         return true;
     }
 
-    public void Send(Letter letter, bool reusingLetter = false)
+    public void Send(Letter letter, bool release = true)
     {
         try
         {
             ushort amount = letter.Ready(sendBuffer, 0);
-            Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
+            if ((LetterType)sendBuffer[2] != LetterType.HOLOGRAMUPDATE)
+            {
+                Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
+            }
             socket.Send(sendBuffer, amount, SocketFlags.None);
             //Debug.LogAssertion("Sent");
-            if (reusingLetter)
+            if (!release)
             {
                 return;
             }

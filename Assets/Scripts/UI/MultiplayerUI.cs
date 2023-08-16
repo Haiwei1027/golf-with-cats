@@ -75,12 +75,12 @@ public class MultiplayerUI : MonoBehaviour
         if (newResidentID == Resident.Instance.record.Id)
         {
             // self join
-            HologramSystem.Instantiate(0);
+            
         }
         else
         {
             // another player
-            
+
         }
 
     }

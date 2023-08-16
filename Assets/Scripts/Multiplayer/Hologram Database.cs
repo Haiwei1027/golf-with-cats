@@ -30,22 +30,17 @@ public class HologramDatabase
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        Hologram hologram = new Hologram(null, id, prefabId);
-        hologram.CacheCreate(letter);
+        HologramType hologramType = (HologramType)letter.ReadByte();
+        Hologram hologram = Hologram.CreateHologram(hologramType, null, id, prefabId);
         holograms.Add(hologram);
+
         letter = Letter.Get();
-        town.SendToAllButOne(hologram.WriteCreate(letter), sender.Id, false);
-        Debug.LogAssertion($"Sent {id} {prefabId} to all but {sender.Id}");
-        Debug.LogAssertion(holograms.Count);
-        foreach (Hologram h in holograms)
-        {
-            Debug.LogAssertion(h.Id);
-        }
+        town.SendToAllButOne(hologram.WriteCreate(letter), sender.Id);
+        Debug.LogAssertion($"Sent {hologram.Id} {hologram.PrefabId} to all but {sender.Id}");
     }
 
     public void Update(ResidentRecord sender, Letter letter)
     {
-        if (letter == null) { Debug.LogAssertion("Null letter"); }
         ushort id = letter.ReadUShort();
         Hologram hologram = holograms.Find(h => h.Id == id);
         if (hologram == null)
@@ -54,8 +49,9 @@ public class HologramDatabase
         }
         hologram.CacheUpdate(letter);
         letter = Letter.Get();
-        town.SendToAllButOne(hologram.WriteData(letter), sender.Id, false);
-        Debug.LogAssertion($"Sent {id} to all but {sender.Id}");
+        hologram.WriteData(letter);
+        town.SendToAllButOne(letter, sender.Id);
+        Debug.LogAssertion($"Sent {hologram.Id} to all but {sender.Id}");
     }
 
     public void Remove(ResidentRecord sender, Letter letter)

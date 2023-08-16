@@ -38,25 +38,9 @@ public class HologramSystem : MonoBehaviour
         transceivers = new List<HologramTransceiver>();
     }
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            foreach (HologramTransceiver transceiver in transceivers)
-            {
-                if (!transceiver.isOwner || !transceiver.enabled) continue;
-                Letter updateLetter = Letter.Get();
-                transceiver.Hologram.WriteData(updateLetter);
-                Resident.SendLetter(updateLetter);
-            }
-        }
-        
-    }
-
     public void FixedUpdate()
     {
         int i=0;
-        return;
         foreach (HologramTransceiver transceiver in transceivers)
         {
             if (!transceiver.isOwner || !transceiver.enabled) continue;

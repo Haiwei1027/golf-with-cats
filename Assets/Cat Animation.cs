@@ -5,28 +5,21 @@ using UnityEngine;
 public class CatAnimation : MonoBehaviour
 {
     CatBits catbits = new CatBits();
-    // Start is called before the first frame update
+
+
     void Start()
     {
-        catbits.fetchBones(transform);
-        Debug.Log(catbits.Head.name);
+        catbits.FetchBones(transform);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        catbits.Head.rotation = Quaternion.Euler(LookAtPos(Vector3.zero));
+        LookAtPosition(GetMouseWorldPosition());
     }
 
-    Vector3 LookAtPos(Vector3 lookPos)
+    public void LookAtPosition(Vector3 position)
     {
-        lookPos = GetMouseWorldPosition(); //temporary measure until we actually have objects to look for
-        Vector3 currentRot = catbits.Head.eulerAngles;
-        Vector3 currentPos = catbits.Head.position;
-
-        currentRot.y = 90 - (Mathf.Rad2Deg * Mathf.Atan2((lookPos.z - currentPos.z) , (lookPos.x - currentPos.x)));
-
-        return currentRot;
+        catbits.Head.rotation = Quaternion.LookRotation(position - transform.position, transform.up);
     }
 
     Vector3 GetMouseWorldPosition()
@@ -37,7 +30,6 @@ public class CatAnimation : MonoBehaviour
         {
             return hit.point;
         }
-        Debug.Log("no hit :c");
         return Vector3.zero;
     }
 }
@@ -46,7 +38,7 @@ public class CatBits
 {
     Transform head;
     public Transform Head {get {return head;} private set {head = value;}}
-    public void fetchBones(Transform transform)
+    public void FetchBones(Transform transform)
     {
         Debug.Log(transform.name);
         head = FindRecursive(transform, "Head");
