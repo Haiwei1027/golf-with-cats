@@ -55,6 +55,7 @@ public class Town
         
         Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
         SendToAllResidents(welcomeLetter);
+        hologramDatabase.Joined(newResident);
         Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
         return true;
     }
@@ -70,6 +71,20 @@ public class Town
         {
             if (resident.Id == except) continue;
             resident.Postbox.Send(letter, true);
+        }
+        if (!release) { return; }
+        letter.Release();
+    }
+
+    public void SendTo(Letter letter, int id, bool release = true)
+    {
+        foreach (ResidentRecord resident in record.Residents)
+        {
+            if (resident.Id == id)
+            {
+                resident.Postbox.Send(letter, !release);
+                break;
+            }
         }
         if (!release) { return; }
         letter.Release();
