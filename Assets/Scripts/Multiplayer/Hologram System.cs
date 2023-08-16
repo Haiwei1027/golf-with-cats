@@ -85,11 +85,9 @@ public class HologramSystem : MonoBehaviour
 
     public static void HandleUpdate(ResidentRecord _, Letter letter)
     {
-        foreach (var transceiver in Instance.transceivers)
-        {
-            transceiver.Hologram.ApplyData(letter);
-        }
-        letter.Release();
+        int id = letter.ReadUShort();
+        HologramTransceiver transceiver = Instance.transceivers.Find(t => t.Id == id);
+        transceiver.Hologram.ApplyData(letter);
     }
 
     public static void HandleDestroy(ResidentRecord _, Letter letter)

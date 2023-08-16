@@ -19,7 +19,6 @@ public class HologramTransceiver : MonoBehaviour
 
     public void Initiate(ushort id, ushort prefabId, bool isOwner)
     {
-        if (updateInterval <= 0) { Debug.LogAssertion($"{name} has sub or zero update interval"); enabled = false;  return; }
         this.isOwner = isOwner;
         switch (type)
         {

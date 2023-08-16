@@ -117,9 +117,6 @@ public class PositionHologram : Hologram
 
     public override void ApplyData(Letter letter)
     {
-        ushort updateId = letter.ReadUShort();
-        if (Id != updateId) { return; }
-
         Vector3 position = Vector3.zero;
         position.x = letter.ReadFloat();
         position.y = letter.ReadFloat();
