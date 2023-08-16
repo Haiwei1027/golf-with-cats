@@ -16,7 +16,9 @@ public class Hologram
     protected HologramTransceiver transceiver;
 
     private Letter cachedCreate;
+    public Letter CachedCreate { get { return cachedCreate; } private set { cachedCreate = value; } }
     private Letter cachedUpdate;
+    public Letter CachedUpdate { get { return cachedUpdate; } private set { cachedUpdate = value; } }
 
     /// <summary>
     /// Constructor for source hologram
