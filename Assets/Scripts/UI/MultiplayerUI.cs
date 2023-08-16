@@ -72,7 +72,17 @@ public class MultiplayerUI : MonoBehaviour
         roomIdLabel.text = $"Room ID: {Resident.Instance.town.Id}";
         townPanel.SetActive(true);
 
-        HologramSystem.Instantiate(0);
+        if (newResidentID == Resident.Instance.record.Id)
+        {
+            // self join
+            HologramSystem.Instantiate(0);
+        }
+        else
+        {
+            // another player
+            
+        }
+
     }
 
     public void OnLeaveTown()
