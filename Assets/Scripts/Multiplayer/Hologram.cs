@@ -9,16 +9,11 @@ public class Hologram
 {
 
     private ushort id;
-    public ushort Id { get { return id; } private set { id = value; } }
+    public ushort Id { get { return id; } protected set { id = value; } }
     private ushort prefabId;
-    public ushort PrefabId { get { return prefabId; } private set { prefabId = value; } }
+    public ushort PrefabId { get { return prefabId; } protected set { prefabId = value; } }
 
     protected HologramTransceiver transceiver;
-
-    private Letter cachedCreate;
-    public Letter CachedCreate { get { return cachedCreate; } private set { cachedCreate = value; } }
-    private Letter cachedUpdate;
-    public Letter CachedUpdate { get { return cachedUpdate; } private set { cachedUpdate = value; } }
 
     /// <summary>
     /// Constructor for source hologram
@@ -53,7 +48,7 @@ public class Hologram
     /// Method for the transceiver to pack hologram object data into a letter
     /// </summary>
     /// <param name="letter"></param>
-    public virtual Letter WriteData(Letter letter)
+    public virtual Letter WriteData(Letter letter, bool useCache = false)
     {
         return letter;
     }
@@ -64,11 +59,7 @@ public class Hologram
     /// <param name="letter"></param>
     public virtual void CacheCreate(Letter letter)
     {
-        if (cachedCreate != null)
-        {
-            cachedCreate.Release();
-        }
-        cachedCreate = letter;
+
     }
 
     /// <summary>
@@ -77,43 +68,60 @@ public class Hologram
     /// <param name="letter"></param>
     public virtual void CacheUpdate(Letter letter)
     {
-        if (cachedUpdate != null)
-        {
-            cachedUpdate.Release();
-        }
-        cachedUpdate = letter;
+
     }
 
     public virtual void ApplyData(Letter letter)
     {
 
     }
-
-    public void Clear()
-    {
-        cachedCreate?.Release();
-        cachedUpdate?.Release();
-    }
 }
 
 public class PositionHologram : Hologram
 {
+
+    protected Vector3 cachedPosition = Vector3.zero;
+
     public PositionHologram(HologramTransceiver transceiver, ushort id, ushort prefabId) : base(transceiver, id, prefabId)
     {
 
     }
 
-    public override Letter WriteData(Letter letter)
+    public override Letter WriteData(Letter letter, bool useCache = false)
     {
         letter.Write(LetterType.HOLOGRAMUPDATE);
         letter.Write(Id);
 
-        Vector3 position = transceiver.transform.position;
+        Vector3 position;
+        if (useCache )
+        {
+            position = cachedPosition;
+        }
+        else
+        {
+            position = transceiver.transform.position;
+        }
+        
         Debug.LogAssertion($"Sending {Id} {position}");
         letter.Write(position.x);
         letter.Write(position.y);
         letter.Write(position.z);
         return letter;
+    }
+
+    public override void CacheCreate(Letter letter)
+    {
+        Id = letter.ReadUShort();
+        PrefabId = letter.ReadUShort();
+        letter.Release();
+    }
+
+    public override void CacheUpdate(Letter letter)
+    {
+        cachedPosition.x = letter.ReadFloat();
+        cachedPosition.y = letter.ReadFloat();
+        cachedPosition.z = letter.ReadFloat();
+        letter.Release();
     }
 
     public override void ApplyData(Letter letter)

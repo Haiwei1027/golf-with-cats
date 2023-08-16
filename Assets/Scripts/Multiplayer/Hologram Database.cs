@@ -21,7 +21,8 @@ public class HologramDatabase
     {
         foreach (var hologram in holograms)
         {
-            town.SendTo(hologram.CachedCreate, newResident.Id);
+            Letter letter = Letter.Get();
+            town.SendTo(hologram.WriteCreate(letter), newResident.Id);
         }
     }
 
@@ -32,7 +33,8 @@ public class HologramDatabase
         Hologram hologram = new Hologram(null, id, prefabId);
         hologram.CacheCreate(letter);
         holograms.Add(hologram);
-        town.SendToAllButOne(letter, sender.Id, false);
+        letter = Letter.Get();
+        town.SendToAllButOne(hologram.WriteCreate(letter), sender.Id, false);
         Debug.LogAssertion($"Sent {id} {prefabId} to all but {sender.Id}");
         Debug.LogAssertion(holograms.Count);
         foreach (Hologram h in holograms)
@@ -51,17 +53,16 @@ public class HologramDatabase
             return;
         }
         hologram.CacheUpdate(letter);
-        town.SendToAllButOne(letter, sender.Id, false);
+        letter = Letter.Get();
+        town.SendToAllButOne(hologram.WriteData(letter), sender.Id, false);
         Debug.LogAssertion($"Sent {id} to all but {sender.Id}");
     }
 
     public void Remove(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
-        Hologram hologram = holograms.Where(h => h.Id == id).FirstOrDefault();
-        hologram.Clear();
+        Hologram hologram = holograms.Find(h => h.Id == id);
         holograms.Remove(hologram);
-        letter.Clear();
         town.SendToAllButOne(letter,sender.Id);
     }
 }
