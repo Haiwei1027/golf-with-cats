@@ -10,7 +10,7 @@ public class HologramTransceiver : MonoBehaviour
     [SerializeField] HologramType type;
 
     public bool isOwner { get; private set; }
-    public int Id { get { return hologram.Id; } }
+    public ushort Id { get { return hologram.Id; } }
 
     public int updateInterval;
 
