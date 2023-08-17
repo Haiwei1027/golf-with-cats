@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawns : MonoBehaviour
+public class GameItemSpawner : MonoBehaviour
 {
 
     Item selectedItemPrefab;

@@ -113,7 +113,6 @@ public class Town
         if (sender.Id != record.MayorId) { return; }
 
         SendToAllResidents(Letter.Get().Write(LetterType.STARTGAME));
-        
         started = true;
     }
 
