@@ -13,6 +13,6 @@ public class CatBehaviour : MonoBehaviour
 
     private void Update()
     {
-        catAnimation.LookAtPosition(catAnimation.GetMouseWorldPosition());
+        catAnimation.LookAtPosition(CameraController.GetMouseWorldPosition());
     }
 }

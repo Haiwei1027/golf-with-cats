@@ -229,7 +229,7 @@ public class CatHologram : Hologram
         if (transceiver != null)
         {
             cachedDestination = navAgent.destination;
-            cachedLook = catAnimation.GetMouseWorldPosition();
+            cachedLook = CameraController.GetMouseWorldPosition();
         }
 
         letter.Write(cachedDestination);
