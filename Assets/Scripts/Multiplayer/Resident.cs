@@ -21,6 +21,7 @@ public class Resident : MonoBehaviour
 
     public static event Action onConnected;
     public static event Action onDisconnected;
+    public static event Action onStartGame;
 
     public static event Action<int> onJoinTown;
     public static event Action onLeaveTown;
@@ -81,14 +82,14 @@ public class Resident : MonoBehaviour
             }
         }
 
-        if (newResidentID == record.Id)
-        {
-            HologramSystem.Instantiate(0);
-        }
-
         letter.Release();
 
         onJoinTown?.Invoke(newResidentID);
+    }
+
+    public void HandleStartGame(ResidentRecord _, Letter letter)
+    {
+        onStartGame?.Invoke();
     }
 
     #endregion
@@ -147,6 +148,7 @@ public class Resident : MonoBehaviour
             {(byte)LetterType.HOLOGRAMCREATE, HologramSystem.HandleCreate },
             {(byte)LetterType.HOLOGRAMUPDATE, HologramSystem.HandleUpdate },
             {(byte)LetterType.HOLOGRAMDESTROY, HologramSystem.HandleDestroy },
+            {(byte)LetterType.STARTGAME, HandleStartGame}
         };
 
         postbox = new Postbox();

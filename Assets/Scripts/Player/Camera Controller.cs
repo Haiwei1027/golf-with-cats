@@ -47,7 +47,7 @@ public class CameraController : MonoBehaviour
 
     void EndPan()
     {
-        
+
     }
 
     void TakeInput()

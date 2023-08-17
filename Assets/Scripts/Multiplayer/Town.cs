@@ -112,8 +112,8 @@ public class Town
     {
         if (sender.Id != record.MayorId) { return; }
 
-        SendToAllButOne(Letter.Get().Write(LetterType.STARTGAME), sender.Id);
-
+        SendToAllResidents(Letter.Get().Write(LetterType.STARTGAME));
+        
         started = true;
     }
 

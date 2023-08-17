@@ -48,7 +48,9 @@ public class MultiplayerUI : MonoBehaviour
         Resident.onDisconnected += OnDisconnected;
         Resident.onJoinTown += OnJoinTown;
         Resident.onLeaveTown += OnLeaveTown;
+        Resident.onStartGame += OnStartGame;
     }
+
     public void OnConnected()
     {
         connectPanel.SetActive(false);
@@ -89,6 +91,13 @@ public class MultiplayerUI : MonoBehaviour
     {
         connectPanel.SetActive(false);
         lobbyPanel.SetActive(true);
+        townPanel.SetActive(false);
+    }
+
+    public void OnStartGame()
+    {
+        connectPanel.SetActive(false);
+        lobbyPanel.SetActive(false);
         townPanel.SetActive(false);
     }
 }
