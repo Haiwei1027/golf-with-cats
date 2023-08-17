@@ -81,7 +81,10 @@ public class Resident : MonoBehaviour
             }
         }
 
-        HologramSystem.Instantiate(0);
+        if (newResidentID == record.Id)
+        {
+            HologramSystem.Instantiate(0);
+        }
 
         letter.Release();
 

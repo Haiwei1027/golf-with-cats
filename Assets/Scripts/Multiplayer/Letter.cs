@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using System.Numerics;
 using System.Text;
 using UnityEngine.Pool;
 /// <summary>
@@ -236,5 +237,22 @@ public class Letter
         ushort value = BitConverter.ToUInt16(bytes, pointer);
         pointer += sizeof(ushort);
         return value;
+    }
+
+    public Letter Write(UnityEngine.Vector3 value)
+    {
+        Write(value.x);
+        Write(value.y);
+        Write(value.z);
+
+        return this;
+    }
+
+    public UnityEngine.Vector3 ReadVector3()
+    {
+        float x = ReadFloat();
+        float y = ReadFloat();
+        float z = ReadFloat();
+        return new UnityEngine.Vector3(x,y,z);
     }
 }

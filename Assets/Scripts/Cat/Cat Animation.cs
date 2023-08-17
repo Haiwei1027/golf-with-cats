@@ -14,7 +14,7 @@ public class CatAnimation : MonoBehaviour
 
     void Update()
     {
-        LookAtPosition(GetMouseWorldPosition());
+        
     }
 
     public void LookAtPosition(Vector3 position)
@@ -22,7 +22,7 @@ public class CatAnimation : MonoBehaviour
         catbits.Head.rotation = Quaternion.LookRotation(position - transform.position, transform.up);
     }
 
-    Vector3 GetMouseWorldPosition()
+    public Vector3 GetMouseWorldPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;

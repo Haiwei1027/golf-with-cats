@@ -16,6 +16,9 @@ public class HologramTransceiver : MonoBehaviour
 
     public int updateInterval;
 
+    [SerializeField] Behaviour[] ownerOnlyScripts;
+    [SerializeField] GameObject[] ownerOnlyObjects;
+
     private Hologram hologram;
     public Hologram Hologram { get { return hologram; } private set {  hologram = value; } }
 
@@ -29,10 +32,28 @@ public class HologramTransceiver : MonoBehaviour
             Letter letter = Letter.Get();
             Resident.SendLetter(hologram.WriteCreate(letter));
         }
+        else
+        {
+            foreach (Behaviour behaviour in ownerOnlyScripts)
+            {
+                behaviour.enabled = false;
+            }
+            foreach (GameObject gameObject in ownerOnlyObjects)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (hologram == null) return;
+        Resident.SendLetter(hologram.WriteDestroy(Letter.Get()));
     }
 }
 public enum HologramType : byte
 {
     POSITION,
-    TRANSFORM
+    TRANSFORM,
+    CAT
 }
