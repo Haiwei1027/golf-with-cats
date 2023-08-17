@@ -60,13 +60,15 @@ public class HologramSystem : MonoBehaviour
         return (ushort)Random.Range(0, 9999_9999+1);
     }
 
-    public static void Instantiate(ushort prefabId)
+    public static GameObject Instantiate(ushort prefabId)
     {
         HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
         ushort id = GenerateHologramId();
         Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
         transceiver.Initiate(id, prefabId, true);
         Instance.transceivers.Add(transceiver);
+
+        return transceiver.gameObject;
     }
 
     public static void HandleCreate(ResidentRecord _, Letter letter)
