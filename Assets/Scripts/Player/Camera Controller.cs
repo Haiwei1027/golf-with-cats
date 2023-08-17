@@ -21,6 +21,17 @@ public class CameraController : MonoBehaviour
         prevMousePos = Vector3.zero;
     }
 
+    public static Vector3 GetMouseWorldPosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.point;
+        }
+        return Vector3.zero;
+    }
+
     void StartPan()
     {
         //no code here as freelook is the only mode
