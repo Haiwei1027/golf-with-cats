@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
         Vector3 mouseChange = Vector3.zero;
         mouseChange.x = prevMousePos.x - Input.mousePosition.x;
         mouseChange.z = prevMousePos.y - Input.mousePosition.y;
-        transform.position = transform.position + mouseChange * 0.01f;
+        transform.position = transform.position + transform.TransformVector(mouseChange) * 0.01f;
     }
 
     void EndPan()
