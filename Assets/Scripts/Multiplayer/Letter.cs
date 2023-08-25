@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Numerics;
 using System.Text;
+using UnityEngine;
 using UnityEngine.Pool;
 /// <summary>
 /// This class acts as a data container and converter
@@ -73,6 +74,7 @@ public class Letter
         {
             Write(resident.Id);
             Write(resident.Username);
+            Write(resident.ColourId);
         }
         return this;
     }
@@ -254,5 +256,25 @@ public class Letter
         float y = ReadFloat();
         float z = ReadFloat();
         return new UnityEngine.Vector3(x,y,z);
+    }
+
+    public Letter Write(Color value)
+    {
+        Write(value.r);
+        Write(value.g);
+        Write(value.b);
+        Write(value.a);
+
+        return this;
+    }
+
+    public Color ReadColour()
+    {
+        float r = ReadFloat();
+        float g = ReadFloat();
+        float b = ReadFloat();
+        float a = ReadFloat();
+
+        return new Color(r, g, b, a);
     }
 }

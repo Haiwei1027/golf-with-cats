@@ -31,7 +31,18 @@ public class ResidentRecord
         get { return town; }
         set { town = value; }
     }
+    private int colourId;
+    public int ColourId
+    {
+        get { return colourId; }
+        set { colourId = value; }
+    }
 
+    /// <summary>
+    /// Created by server to store serverside playerdata
+    /// </summary>
+    /// <param name="postbox"></param>
+    /// <param name="id"></param>
     public ResidentRecord(Postbox postbox, int id)
     {
         this.postbox = postbox;
@@ -39,15 +50,25 @@ public class ResidentRecord
         Id = id;
     }
 
+    /// <summary>
+    /// Create record instance to store local player data
+    /// </summary>
+    /// <param name="postbox"></param>
     public ResidentRecord(Postbox postbox)
     {
         this.postbox = postbox;
         this.postbox.Owner = this;
     }
 
-    public ResidentRecord(int id, string username)
+    /// <summary>
+    /// Create record instance to store remote player data
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="username"></param>
+    public ResidentRecord(int id, string username, int colourId)
     {
         this.id = id;
         this.username = username;
+        this.colourId = colourId;
     }
 }

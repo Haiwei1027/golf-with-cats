@@ -70,14 +70,15 @@ public class Resident : MonoBehaviour
         {
             int id = letter.ReadInt();
             string username = letter.ReadString();
+            int displayColour = letter.ReadInt();
             if (id != record.Id)
             {
-                ResidentRecord otherResident = new ResidentRecord(id, username);
+                ResidentRecord otherResident = new ResidentRecord(id, username, displayColour);
                 town.AddResident(otherResident);
             }
             else
             {
-                
+                record.ColourId = displayColour;
                 town.AddResident(record);
             }
         }

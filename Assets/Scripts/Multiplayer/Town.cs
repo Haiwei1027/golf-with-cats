@@ -17,6 +17,7 @@ public class Town
     public int Id { get { return record.Id; }}
 
     private bool started = false;
+    private int colourPointer;
 
     /// <summary>
     /// Constructor
@@ -29,6 +30,7 @@ public class Town
         record.Capacity = capacity;
         record.MayorId = Mayor.Id;
         hologramDatabase = new HologramDatabase(this);
+        colourPointer = new System.Random().Next(PlayerColour.COUNT);
         Debug.LogAssertion($"Town {Id} created");
         Join(Mayor);
     }
@@ -55,8 +57,11 @@ public class Town
 
         newResident.Town = record;
         record.AddResident(newResident);
-        
+
+        newResident.ColourId = colourPointer;
+        colourPointer += 2; //best prime
         Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
+        
         SendToAllResidents(welcomeLetter);
         hologramDatabase.Joined(newResident);
         Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
