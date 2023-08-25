@@ -23,6 +23,9 @@ public class CameraController : MonoBehaviour
         cameraTransform = transform.GetChild(0);
         camera = cameraTransform.GetComponent<Camera>();
         prevMousePos = Vector3.zero;
+
+        enabled = false;
+        Resident.onStartGame += () => { enabled = true; };
     }
 
     public static Vector3 GetMouseWorldPosition()
@@ -46,10 +49,6 @@ public class CameraController : MonoBehaviour
         Vector3 mouseChange = Vector3.zero;
         mouseChange.x = prevMousePos.x - Input.mousePosition.x;
         mouseChange.z = prevMousePos.y - Input.mousePosition.y;
-        if (angleOfDepression != 90f)
-        {
-            mouseChange.z *= 2f / Mathf.Sin(angleOfDepression * Mathf.Deg2Rad);
-        }
         transform.position = transform.position + transform.TransformVector(mouseChange) * panSensitivity;
     }
 
