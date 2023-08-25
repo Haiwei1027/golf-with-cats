@@ -10,7 +10,7 @@ public class GameItemSpawner : MonoBehaviour
     Rigidbody spawnedItemPhysics;
     Vector3 spawnedItemBase;
     bool flinging;
-    public void setSelectedItem(Item item)
+    public void SetSelectedItem(Item item)
     {
         selectedItemPrefab = item;
     }
@@ -19,7 +19,7 @@ public class GameItemSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        setSelectedItem(new Item(1));
+        SetSelectedItem(new Item(1));
     }
 
     // Update is called once per frame
@@ -33,17 +33,17 @@ public class GameItemSpawner : MonoBehaviour
         if (Input.GetMouseButtonDown(LeftMouseButton))
         {
             Debug.Log("started spawn");
-            startSpawn();
+            StartSpawn();
         }
 
         if ((Input.GetMouseButtonUp(LeftMouseButton)) && flinging)
         {
             Debug.Log("Flinging");
-            fling();
+            Fling();
         }
     }
 
-    void startSpawn()
+    void StartSpawn()
     {
         if (selectedItemPrefab.Equals(null)) {return;}
 
@@ -59,11 +59,11 @@ public class GameItemSpawner : MonoBehaviour
         
     }
 
-    void fling()
+    void Fling()
     {
         Vector3 flingVector = spawnedItemBase - CameraController.GetMouseWorldPosition();
 
-        flingVector *= 3;
+        flingVector *= 3f;
 
         spawnedItemPhysics.isKinematic = false;
         spawnedItemPhysics.detectCollisions = true;
