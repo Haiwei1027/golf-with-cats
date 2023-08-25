@@ -6,8 +6,12 @@ public class CameraController : MonoBehaviour
 {
     private const int MiddleMouseButton = 2;
 
+    public float zoomSensitivity;
+    public float panSensitivity;
+
     public float angleOfDepression;
     public float cameraDistance;
+    public Vector2 sizeRange;
     public float cameraSize;
 
     private Vector3 prevMousePos;
@@ -42,12 +46,21 @@ public class CameraController : MonoBehaviour
         Vector3 mouseChange = Vector3.zero;
         mouseChange.x = prevMousePos.x - Input.mousePosition.x;
         mouseChange.z = prevMousePos.y - Input.mousePosition.y;
-        transform.position = transform.position + transform.TransformVector(mouseChange) * 0.01f;
+        if (angleOfDepression != 90f)
+        {
+            mouseChange.z *= 2f / Mathf.Sin(angleOfDepression * Mathf.Deg2Rad);
+        }
+        transform.position = transform.position + transform.TransformVector(mouseChange) * panSensitivity;
     }
 
     void EndPan()
     {
 
+    }
+
+    void Zoom(float delta)
+    {
+        cameraSize = Mathf.Clamp(cameraSize + delta * zoomSensitivity, sizeRange.x, sizeRange.y);
     }
 
     void TakeInput()
@@ -64,7 +77,10 @@ public class CameraController : MonoBehaviour
         {
             EndPan();
         }
-
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            Zoom(Input.mouseScrollDelta.y);
+        }
         prevMousePos = Input.mousePosition;
     }
 
