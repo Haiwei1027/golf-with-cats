@@ -30,8 +30,11 @@ public class HologramDatabase
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
+        Vector3 spawnPosition = letter.ReadVector3();
+        Quaternion spawnRotation = letter.ReadQuaternion();
         HologramType hologramType = (HologramType)letter.ReadByte();
         Hologram hologram = Hologram.CreateHologram(hologramType, null, id, prefabId);
+        hologram.SetSpawn(spawnPosition,spawnRotation);
         holograms.Add(hologram);
 
         letter = Letter.Get();

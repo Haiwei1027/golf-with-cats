@@ -15,6 +15,9 @@ public class Hologram
     private ushort prefabId;
     public ushort PrefabId { get { return prefabId; } protected set { prefabId = value; } }
 
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+
     protected HologramTransceiver transceiver;
 
 
@@ -23,6 +26,12 @@ public class Hologram
         this.transceiver = transceiver;
         this.id = id;
         this.prefabId = prefabId;
+    }
+
+    public void SetSpawn(Vector3 spawnPosition, Quaternion spawnRotation)
+    {
+        this.spawnPosition = spawnPosition;
+        this.spawnRotation = spawnRotation;
     }
 
     public static Hologram CreateHologram(HologramType type, HologramTransceiver transceiver, ushort id, ushort prefabId)
@@ -46,6 +55,15 @@ public class Hologram
         letter.Write(LetterType.HOLOGRAMCREATE);
         letter.Write(Id);
         letter.Write(PrefabId);
+
+        if (transceiver != null)
+        {
+            spawnPosition = transceiver.transform.position;
+            spawnRotation = transceiver.transform.rotation;
+        }
+        letter.Write(spawnPosition);
+        letter.Write(spawnRotation);
+
         return letter;
     }
 

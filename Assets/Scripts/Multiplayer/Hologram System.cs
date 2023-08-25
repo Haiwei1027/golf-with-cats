@@ -60,7 +60,7 @@ public class HologramSystem : MonoBehaviour
         return (ushort)Random.Range(0, 9999_9999+1);
     }
 
-    public static GameObject Instantiate(ushort prefabId)
+    public static GameObject Instantiate(ushort prefabId, Vector3 spawnPosition, Quaternion spawnRotation)
     {
         HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
         ushort id = GenerateHologramId();
@@ -71,14 +71,21 @@ public class HologramSystem : MonoBehaviour
         return transceiver.gameObject;
     }
 
+    public static GameObject Instantiate(ushort prefabId)
+    {
+        return Instantiate(prefabId, Vector3.zero, Quaternion.identity);
+    }
+
     public static void HandleCreate(ResidentRecord _, Letter letter)
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
+        Vector3 spawnPosition = letter.ReadVector3();
+        Quaternion spawnRotation = letter.ReadQuaternion();
         Debug.LogAssertion($"Received create {id} {prefabId}");
         HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
         if (transceiver != null) { return; }
-        transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
+        transceiver = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation).GetComponent<HologramTransceiver>();
         transceiver.Initiate(id,prefabId,false);
         Instance.transceivers.Add(transceiver);
         letter.Release();

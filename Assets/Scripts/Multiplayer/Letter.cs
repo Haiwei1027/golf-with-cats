@@ -258,6 +258,25 @@ public class Letter
         return new UnityEngine.Vector3(x,y,z);
     }
 
+    public Letter Write(UnityEngine.Quaternion value)
+    {
+        Write(value.x);
+        Write(value.y);
+        Write(value.z);
+        Write(value.w);
+
+        return this;
+    }
+
+    public UnityEngine.Quaternion ReadQuaternion()
+    {
+        float x = ReadFloat();
+        float y = ReadFloat();
+        float z = ReadFloat();
+        float w = ReadFloat();
+        return new UnityEngine.Quaternion(x, y, z, w);
+    }
+
     public Letter Write(Color value)
     {
         Write(value.r);
