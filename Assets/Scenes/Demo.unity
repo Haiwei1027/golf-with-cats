@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 47137804}
   - component: {fileID: 47137805}
   m_Layer: 0
-  m_Name: Player Item Spawner
+  m_Name: Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1152,6 +1152,7 @@ MonoBehaviour:
   prefabs:
   - {fileID: 5119119159289398985, guid: 0be0e42a31d62e544a72ce01bf5795a1, type: 3}
   - {fileID: 6268756933839284519, guid: a02c20614f5131e468ebe32e3a46edd7, type: 3}
+  - {fileID: 76372226061486677, guid: fdaecbd482a7b4542a7397cb5e55954d, type: 3}
 --- !u!1 &286483388
 GameObject:
   m_ObjectHideFlags: 0
@@ -2670,7 +2671,7 @@ GameObject:
   - component: {fileID: 1050569010}
   - component: {fileID: 1050569011}
   m_Layer: 0
-  m_Name: Golf Course Manager
+  m_Name: Golf Course
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2704,7 +2705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catPrefabId: 0
-  ballPrefabId: 1
+  ballPrefabId: 2
 --- !u!1 &1095448815
 GameObject:
   m_ObjectHideFlags: 0
