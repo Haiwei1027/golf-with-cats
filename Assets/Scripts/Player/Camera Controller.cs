@@ -28,7 +28,12 @@ public class CameraController : MonoBehaviour
         Resident.onStartGame += () => { enabled = true; };
     }
 
-    public static Vector3 GetMouseWorldPosition()
+    /// <summary>
+    /// Casts a ray using the mouse position from the camera to the world
+    /// </summary>
+    /// <returns>position the mouse is hovering over</returns>
+    /// <exception cref="UnityException">the mouse isn't hovering over the world</exception>
+    public static Vector3 GetMouseWorldPosition() 
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -36,7 +41,7 @@ public class CameraController : MonoBehaviour
         {
             return hit.point;
         }
-        return Vector3.zero;
+        throw new UnityException("Mouse over void");
     }
 
     void StartPan()

@@ -7,6 +7,7 @@ public class CatAnimation : MonoBehaviour
 {
     CatBits catbits = new CatBits();
 
+    public Vector3 lookingAt { get; private set; }
 
     void Start()
     {
@@ -20,6 +21,7 @@ public class CatAnimation : MonoBehaviour
 
     public void LookAtPosition(Vector3 position)
     {
+        lookingAt = position;
         //params
         Quaternion targetRotation;
         Quaternion targetRotationNeck002;

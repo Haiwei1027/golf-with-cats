@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item
+[CreateAssetMenu()]
+public class Item : ScriptableObject
 {
-    
-    public ushort id;
 
-    public Item(ushort id)
-    {
-        this.id = id;
-    }
+    public ushort prefabId;
+    public GameObject previewPrefab;
+    public Vector3 spawnOffset;
+    public AnimationCurve flingFunction;
+
+    public Sprite itemSprite;
 
 }
