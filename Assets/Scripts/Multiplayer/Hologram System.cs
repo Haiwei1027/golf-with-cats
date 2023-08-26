@@ -62,7 +62,7 @@ public class HologramSystem : MonoBehaviour
 
     public static GameObject Instantiate(ushort prefabId, Vector3 spawnPosition, Quaternion spawnRotation)
     {
-        HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
+        HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation).GetComponent<HologramTransceiver>();
         ushort id = GenerateHologramId();
         Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
         transceiver.Initiate(id, prefabId, true);
@@ -94,7 +94,7 @@ public class HologramSystem : MonoBehaviour
     public static void HandleUpdate(ResidentRecord _, Letter letter)
     {
         ushort id = letter.ReadUShort();
-        Debug.LogAssertion($"Received Update {id}");
+        //Debug.LogAssertion($"Received Update {id}");
         HologramTransceiver transceiver = Instance.transceivers.Find(t => t.Id == id);
         transceiver.Hologram.ApplyData(letter);
     }

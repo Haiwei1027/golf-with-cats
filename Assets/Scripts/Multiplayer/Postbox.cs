@@ -59,8 +59,9 @@ public class Postbox
     {
         Letter letter = Letter.Get();
         letter.Copy(receiveBuffer, amount);
-        Debug.LogAssertion("Got Letter " + (LetterType)receiveBuffer[0]);
         onLetter?.Invoke(owner, letter);
+        if ((LetterType)receiveBuffer[0] == LetterType.HOLOGRAMUPDATE) { return; }
+        Debug.LogAssertion("Got Letter " + (LetterType)receiveBuffer[0]);
     }
 
     public bool ReceiveData()

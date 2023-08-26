@@ -78,6 +78,7 @@ public class Resident : MonoBehaviour
             }
             else
             {
+                Debug.LogAssertion(displayColour);
                 record.ColourId = displayColour;
                 town.AddResident(record);
             }

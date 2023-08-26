@@ -59,7 +59,7 @@ public class Town
         record.AddResident(newResident);
 
         newResident.ColourId = colourPointer;
-        colourPointer += 2; //best prime
+        colourPointer = (colourPointer + 2)%PlayerColour.COUNT; //best prime
         Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
         
         SendToAllResidents(welcomeLetter);

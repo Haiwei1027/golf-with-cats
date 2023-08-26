@@ -17,6 +17,7 @@ public class CatBallSpawn : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (spawns == null) { spawns = new Dictionary<int, CatBallSpawn>(); }
         spawns.Add(colourId, this);
     }
 
