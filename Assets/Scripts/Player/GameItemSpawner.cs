@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,13 +6,21 @@ using UnityEngine;
 public class GameItemSpawner : MonoBehaviour
 {
 
-    Item selectedItem { get { return Inventory.Instance.SelectedItem; } }
+    int selectedId;
+    Item selectedItem;
     
 
     private const int LeftMouseButton = 0;
     private const int RightMouseButton = 1;
 
+    public float maxDragDist;
+    public LineRenderer dragLine;
+
     private GameObject previewObject;
+    private Vector3 spawnBase;
+    private Plane spawnPlane;
+    private Vector3 flingVector;
+    private bool spawning;
 
     void Start()
     {
@@ -23,15 +32,20 @@ public class GameItemSpawner : MonoBehaviour
         Inventory.Instance.onSelect -= OnSelect;
     }
 
-    public void OnSelect()
+    public void OnSelect(int id)
     {
         if (!enabled) return;
+
+        selectedId = id;
+        selectedItem = Inventory.Instance.BorrowItem(id);
+
         if (selectedItem != null)
         {
             if (previewObject != null) { Destroy(previewObject); }
             if (selectedItem.previewPrefab == null) { return; }
 
             previewObject = Instantiate(selectedItem.previewPrefab);
+            Debug.LogAssertion("Spawned Preview");
         }
         else
         {
@@ -39,56 +53,108 @@ public class GameItemSpawner : MonoBehaviour
         }
     }
 
+    public void OnUnselect()
+    {
+        if (previewObject == null) { return; }
+        Destroy(previewObject );
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (selectedItem == null) { return; }
         TakeInput();
+        if (previewObject != null)
+        {
+            if (!spawning)
+            {
+                if (selectedItem != null)
+                {
+                    previewObject.transform.position = CameraController.GetMouseWorldPosition() + selectedItem.spawnOffset;
+                }
+            }
+        }
     }
 
     void TakeInput()
     {
+        if (Input.GetMouseButtonDown(LeftMouseButton))
+        {
+            CancelSpawn();
+        }
         if (Input.GetMouseButtonDown(RightMouseButton))
         {
-            StartCoroutine(SpawnSelected());
+            StartSpawn();
+        }
+        if (Input.GetMouseButton(RightMouseButton))
+        {
+            Spawning();
+        }
+        if (Input.GetMouseButtonUp(RightMouseButton))
+        {
+            EndSpawn();
         }
     }
 
-    IEnumerator SpawnSelected()
+    private void CancelSpawn()
     {
-        if (selectedItem != null) yield break;
+        Inventory.Instance.ReturnItem(selectedId);
+        CleanUp();
 
-        Vector3 spawnBase;
+    }
+
+    private void StartSpawn()
+    {
+        if (spawning) { CancelSpawn(); return; }
+        if (selectedItem == null) return;
         try
         {
             spawnBase = CameraController.GetMouseWorldPosition();
-        } catch (UnityException e)
+        }
+        catch (UnityException e)
         {
             Debug.LogError(e);
-            yield break;
+            return;
         }
+        Debug.LogAssertion("Start Spawn");
 
-        if (selectedItem.previewPrefab != null) preview = Instantiate(selectedItem.previewPrefab);
-        Vector3 flingVector = Vector3.zero;
+        spawnPlane = new Plane(Vector3.up, spawnBase);
+        dragLine.gameObject.SetActive(false);
+        spawning = true;
+    }
 
-        WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
-        while (!Input.GetMouseButtonUp(RightMouseButton)) 
-        {
+    private void Spawning()
+    {
+        if (!spawning) { return; }
+        Ray mouseRay = CameraController.GetMouseRay();
+        spawnPlane.Raycast(mouseRay, out float dist);
+        Vector3 planarMousePosition = mouseRay.origin + mouseRay.direction * dist;
+        dist = Vector3.Distance(planarMousePosition, spawnBase);
+        planarMousePosition = Vector3.Lerp(spawnBase, planarMousePosition, Mathf.Clamp01(maxDragDist / dist));
+        flingVector = spawnBase - planarMousePosition;
+        dragLine.transform.position = spawnBase;
+        dragLine.SetPosition(1, new Vector3(flingVector.x, flingVector.z, dragLine.GetPosition(1).z));
 
-            flingVector = spawnBase - CameraController.GetMouseWorldPosition();
+    }
 
-            for (int i=0;i<2;i++) yield return waitForEndOfFrame;
-        }
+    private void EndSpawn()
+    {
+        if (!spawning) { return; }
+        Debug.LogAssertion("End Spawn");
+        GameObject spawned = HologramSystem.Instantiate(selectedItem.prefabId, spawnBase + selectedItem.spawnOffset, Quaternion.LookRotation(-flingVector, Vector3.up));
 
-        if (preview != null) Destroy(preview);
+        flingVector = flingVector.normalized * selectedItem.flingFunction.Evaluate(flingVector.magnitude / maxDragDist);
+        Debug.LogAssertion(flingVector.magnitude);
+        spawned.GetComponent<Rigidbody>().velocity = flingVector;
 
-        GameObject spawned = HologramSystem.Instantiate(selectedItem.prefabId, spawnBase + selectedItem.spawnOffset, Quaternion.LookRotation(-flingVector,Vector3.up));
-        Rigidbody spawnedPhysics = spawned.GetComponent<Rigidbody>();
+        Inventory.Instance.Used(selectedId);
+        CleanUp();   
+    }
 
-        flingVector = flingVector.normalized * selectedItem.flingFunction.Evaluate(flingVector.magnitude);
-
-        spawnedPhysics.velocity = flingVector;
-
-        Inventory.Instance.Used(selectedItem);
+    private void CleanUp()
+    {
+        selectedItem = null;
+        if (previewObject != null) Destroy(previewObject);
+        dragLine.gameObject.SetActive(false);
+        spawning = false;
     }
 }

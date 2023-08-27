@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,18 +58,24 @@ public class HologramSystem : MonoBehaviour
 
     private static ushort GenerateHologramId()
     {
-        return (ushort)Random.Range(0, 9999_9999+1);
+        return (ushort)UnityEngine.Random.Range(0, 9999_9999+1);
     }
 
     public static GameObject Instantiate(ushort prefabId, Vector3 spawnPosition, Quaternion spawnRotation)
     {
-        HologramTransceiver transceiver = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation).GetComponent<HologramTransceiver>();
-        ushort id = GenerateHologramId();
-        Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
-        transceiver.Initiate(id, prefabId, true);
-        Instance.transceivers.Add(transceiver);
-
-        return transceiver.gameObject;
+        GameObject spawned = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation);
+        try
+        {
+            HologramTransceiver transceiver = spawned.GetComponent<HologramTransceiver>();
+            ushort id = GenerateHologramId();
+            Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
+            transceiver.Initiate(id, prefabId, true);
+            Instance.transceivers.Add(transceiver);
+        }catch (NullReferenceException e)
+        {
+            Debug.LogError(e);
+        }
+        return spawned;
     }
 
     public static GameObject Instantiate(ushort prefabId)

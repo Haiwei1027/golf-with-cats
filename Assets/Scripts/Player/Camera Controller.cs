@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    private static CameraController instance;
+    public static CameraController Instance { get { return instance; } }
+
     private const int MiddleMouseButton = 2;
 
     public float zoomSensitivity;
@@ -17,7 +20,12 @@ public class CameraController : MonoBehaviour
     private Vector3 prevMousePos;
     private Transform cameraTransform;
     private new Camera camera;
-    
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         cameraTransform = transform.GetChild(0);
@@ -35,13 +43,18 @@ public class CameraController : MonoBehaviour
     /// <exception cref="UnityException">the mouse isn't hovering over the world</exception>
     public static Vector3 GetMouseWorldPosition() 
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Instance.camera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
             return hit.point;
         }
         throw new UnityException("Mouse over void");
+    }
+
+    public static Ray GetMouseRay()
+    {
+        return Instance.camera.ScreenPointToRay(Input.mousePosition);
     }
 
     void StartPan()
