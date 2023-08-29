@@ -6,9 +6,13 @@ public class CourseManager : MonoBehaviour
 {
     [SerializeField] private ushort catPrefabId;
     [SerializeField] private ushort ballPrefabId;
+
+    [SerializeField] GameObject gameUI;
+
     // Start is called before the first frame update
     void Start()
     {
+        gameUI.SetActive(false);
         Resident.onStartGame += StartCourse;
     }
 
@@ -22,6 +26,8 @@ public class CourseManager : MonoBehaviour
         HologramSystem.Instantiate(ballPrefabId, spawn.transform.position+spawn.ballOffset, spawn.transform.rotation);
 
         HologramSystem.Instantiate(3);
+
+        gameUI.SetActive(true);
     }
 
     // Update is called once per frame
