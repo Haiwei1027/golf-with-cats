@@ -19,7 +19,7 @@ public class CatBehaviour : MonoBehaviour
         }
         catch (UnityException e)
         {
-            Debug.LogError(e);
+            
         }
     }
 }

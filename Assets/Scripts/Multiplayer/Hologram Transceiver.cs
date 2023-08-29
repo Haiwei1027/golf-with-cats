@@ -22,7 +22,7 @@ public class HologramTransceiver : MonoBehaviour
 
     public void Initiate(ushort id, ushort prefabId, int ownerId, Letter createLetter = null)
     {
-        isOwner = false;
+        isOwner = false || isOwner;
         
         hologram = Hologram.CreateHologram(type, this, id, prefabId, ownerId);
         if (isOwner)

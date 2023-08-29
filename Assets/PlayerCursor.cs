@@ -18,6 +18,6 @@ public class PlayerCursor : MonoBehaviour
         {
             transform.position = CameraController.GetMouseWorldPosition();
         }
-        catch (UnityException e) { Debug.Log(e); }
+        catch (UnityException e) {}
     }
 }
