@@ -1,27 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-public class ItemBank
+public class ItemBank : ScriptableObject
 {
-    public static List<Item> items;
+    public static ItemBank Instance;
+
+    public static Item[] items;
 
     public static void LoadAllItems()
     {
-        string[] guids = AssetDatabase.FindAssets("t:Item");
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            items.Add(AssetDatabase.LoadAssetAtPath<Item>(path));
-        }
+        items = Resources.LoadAll<Item>("Items");
+        Debug.LogAssertion($"Loaded {items.Length} items");
     }
 
     public static Item GetItem(string name)
     {
         if (items == null)
         {
-            items = new List<Item>();
             LoadAllItems();
         }
         foreach (Item item in items)
