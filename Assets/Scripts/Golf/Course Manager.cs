@@ -20,6 +20,8 @@ public class CourseManager : MonoBehaviour
 
         HologramSystem.Instantiate(catPrefabId, spawn.transform.position, spawn.transform.rotation);
         HologramSystem.Instantiate(ballPrefabId, spawn.transform.position+spawn.ballOffset, spawn.transform.rotation);
+
+        HologramSystem.Instantiate(3);
     }
 
     // Update is called once per frame

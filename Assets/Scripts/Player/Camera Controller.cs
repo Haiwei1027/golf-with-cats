@@ -21,6 +21,8 @@ public class CameraController : MonoBehaviour
     private Transform cameraTransform;
     private new Camera camera;
 
+    public static Camera Camera { get { return instance.camera; } }
+
     private void Awake()
     {
         instance = this;
