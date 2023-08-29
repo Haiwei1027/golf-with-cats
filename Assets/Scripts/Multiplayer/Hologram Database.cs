@@ -30,11 +30,10 @@ public class HologramDatabase
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        Vector3 spawnPosition = letter.ReadVector3();
-        Quaternion spawnRotation = letter.ReadQuaternion();
+        int ownerId = letter.ReadInt();
         HologramType hologramType = (HologramType)letter.ReadByte();
-        Hologram hologram = Hologram.CreateHologram(hologramType, null, id, prefabId);
-        hologram.SetSpawn(spawnPosition,spawnRotation);
+        Hologram hologram = Hologram.CreateHologram(hologramType, null, id, prefabId, ownerId);
+        hologram.SetSpawn(letter);
         holograms.Add(hologram);
 
         letter = Letter.Get();
@@ -51,6 +50,7 @@ public class HologramDatabase
             return;
         }
         hologram.CacheUpdate(letter);
+        
         letter = Letter.Get();
         hologram.WriteData(letter);
         town.SendToAllButOne(letter, sender.Id);

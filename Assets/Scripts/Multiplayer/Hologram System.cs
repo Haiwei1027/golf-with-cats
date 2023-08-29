@@ -69,7 +69,7 @@ public class HologramSystem : MonoBehaviour
             HologramTransceiver transceiver = spawned.GetComponent<HologramTransceiver>();
             ushort id = GenerateHologramId();
             Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
-            transceiver.Initiate(id, prefabId, true);
+            transceiver.Initiate(id, prefabId);
             Instance.transceivers.Add(transceiver);
         }catch (NullReferenceException e)
         {
@@ -87,15 +87,14 @@ public class HologramSystem : MonoBehaviour
     {
         ushort id = letter.ReadUShort();
         ushort prefabId = letter.ReadUShort();
-        Vector3 spawnPosition = letter.ReadVector3();
-        Quaternion spawnRotation = letter.ReadQuaternion();
+        int ownerId = letter.ReadInt();
+        HologramType hologramType = (HologramType)letter.ReadByte();
         Debug.LogAssertion($"Received create {id} {prefabId}");
         HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
         if (transceiver != null) { return; }
-        transceiver = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation).GetComponent<HologramTransceiver>();
-        transceiver.Initiate(id,prefabId,false);
+        transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
+        transceiver.Initiate(id,prefabId,ownerId, letter);
         Instance.transceivers.Add(transceiver);
-        letter.Release();
     }
 
     public static void HandleUpdate(ResidentRecord _, Letter letter)

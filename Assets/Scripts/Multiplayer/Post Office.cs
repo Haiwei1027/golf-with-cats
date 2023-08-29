@@ -16,6 +16,7 @@ public class PostOffice : MonoBehaviour
     private List<ResidentRecord> residents = new List<ResidentRecord>();
     private List<ResidentRecord> leavers = new List<ResidentRecord>();
 
+    private List<Town> abandonedTowns = new List<Town>();
     private List<Town> towns = new List<Town>();
 
     private Socket serverSocket;
@@ -203,7 +204,16 @@ public class PostOffice : MonoBehaviour
         foreach (Town town in towns)
         {
             town.Update();
+            if (town.Population <= 0)
+            {
+                abandonedTowns.Add(town);
+            }
         }
+        foreach(Town town in abandonedTowns)
+        {
+            towns.Remove(town);
+        }
+        abandonedTowns.Clear();
     }
 
     void OnApplicationQuit()

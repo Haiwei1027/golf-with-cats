@@ -12,8 +12,6 @@ public class HologramTransceiver : MonoBehaviour
     public bool isOwner { get; private set; }
     public ushort Id { get { return hologram.Id; } }
 
-    public ushort ID;
-
     public int updateInterval;
 
     [SerializeField] Behaviour[] ownerOnlyScripts;
@@ -22,11 +20,11 @@ public class HologramTransceiver : MonoBehaviour
     private Hologram hologram;
     public Hologram Hologram { get { return hologram; } private set {  hologram = value; } }
 
-    public void Initiate(ushort id, ushort prefabId, bool isOwner)
+    public void Initiate(ushort id, ushort prefabId, int ownerId, Letter createLetter = null)
     {
-        ID = id;
-        this.isOwner = isOwner;
-        hologram = Hologram.CreateHologram(type, this, id, prefabId);
+        isOwner = false;
+        
+        hologram = Hologram.CreateHologram(type, this, id, prefabId, ownerId);
         if (isOwner)
         {
             Letter letter = Letter.Get();
@@ -34,6 +32,7 @@ public class HologramTransceiver : MonoBehaviour
         }
         else
         {
+            hologram.SetSpawn(createLetter);
             foreach (Behaviour behaviour in ownerOnlyScripts)
             {
                 behaviour.enabled = false;
@@ -43,6 +42,12 @@ public class HologramTransceiver : MonoBehaviour
                 gameObject.SetActive(false);
             }
         }
+    }
+
+    public void Initiate(ushort id, ushort prefabId)
+    {
+        isOwner = true;
+        Initiate(id, prefabId,Resident.Id);
     }
 
     void OnDestroy()
@@ -55,5 +60,6 @@ public enum HologramType : byte
 {
     POSITION,
     TRANSFORM,
-    CAT
+    CAT,
+    CURSOR
 }

@@ -15,6 +15,7 @@ public class Town
     public HologramDatabase hologramDatabase { get; private set; }
 
     public int Id { get { return record.Id; }}
+    public int Population { get {  return record.Population; }}
 
     private bool started = false;
     private int colourPointer;
@@ -110,6 +111,7 @@ public class Town
 
     public void ElectNewMayor()
     {
+        if (record.Population <= 0) { return; }
         record.MayorId = record.Residents.First().Id;
     }
 

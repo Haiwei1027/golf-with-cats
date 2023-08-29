@@ -26,6 +26,8 @@ public class Resident : MonoBehaviour
     public static event Action<int> onJoinTown;
     public static event Action onLeaveTown;
 
+    public static int Id { get { return Instance.record.Id; } }
+
     public ResidentRecord record;
     public TownRecord town;
 
