@@ -13,13 +13,11 @@ public class CatBehaviour : MonoBehaviour
 
     private void Update()
     {
+        if (!PlayerCursor.Focused) return;
         try
         {
             catAnimation.LookAtPosition(CameraController.GetMouseWorldPosition());
         }
-        catch (UnityException e)
-        {
-            
-        }
+        catch (UnityException e) { }
     }
 }

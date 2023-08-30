@@ -25,6 +25,7 @@ public class GameItemSpawner : MonoBehaviour
     void Start()
     {
         Inventory.Instance.onSelect += OnSelect;
+        Inventory.Instance.onUnselect += OnUnselect;
         enabled = false;
         Resident.onStartGame += () => { enabled = true; };
     }
@@ -32,6 +33,7 @@ public class GameItemSpawner : MonoBehaviour
     private void OnDestroy()
     {
         Inventory.Instance.onSelect -= OnSelect;
+        Inventory.Instance.onUnselect -= OnUnselect;
     }
 
     public void OnSelect(int id)
@@ -57,8 +59,8 @@ public class GameItemSpawner : MonoBehaviour
 
     public void OnUnselect()
     {
-        if (previewObject == null) { return; }
-        Destroy(previewObject );
+        if (previewObject != null) { Destroy(previewObject); }
+        CancelSpawn();
     }
 
     // Update is called once per frame
@@ -82,19 +84,19 @@ public class GameItemSpawner : MonoBehaviour
 
     void TakeInput()
     {
-        if (Input.GetMouseButtonDown(LeftMouseButton))
+        if (Input.GetMouseButtonDown(RightMouseButton))
         {
             CancelSpawn();
         }
-        if (Input.GetMouseButtonDown(RightMouseButton))
+        if (Input.GetMouseButtonDown(LeftMouseButton))
         {
             StartSpawn();
         }
-        if (Input.GetMouseButton(RightMouseButton))
+        if (Input.GetMouseButton(LeftMouseButton))
         {
             Spawning();
         }
-        if (Input.GetMouseButtonUp(RightMouseButton))
+        if (Input.GetMouseButtonUp(LeftMouseButton))
         {
             EndSpawn();
         }
@@ -137,6 +139,7 @@ public class GameItemSpawner : MonoBehaviour
         planarMousePosition = Vector3.Lerp(spawnBase, planarMousePosition, Mathf.Clamp01(maxDragDist / dist));
         flingVector = spawnBase - planarMousePosition;
         dragLine.transform.position = spawnBase;
+        dragLine.gameObject.SetActive(true);
         dragLine.SetPosition(1, new Vector3(flingVector.x, flingVector.z, dragLine.GetPosition(1).z));
 
     }

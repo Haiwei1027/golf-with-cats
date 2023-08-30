@@ -45,7 +45,23 @@ public class Inventory : MonoBehaviour
 
         Capacity = 4;
         SetItem(0, ItemBank.GetItem("Test Item"));
+        SetItem(1, ItemBank.GetItem("Test Item"));
+        SetItem(2, ItemBank.GetItem("Test Item"));
+        SetItem(3, ItemBank.GetItem("Test Item"));
 
+    }
+
+    private void Update()
+    {
+        for (int i = (int)KeyCode.Alpha1;i <= (int)KeyCode.Alpha9; i++)
+        {
+            if (i- (int)KeyCode.Alpha1 > Capacity) break;
+            if (Input.GetKeyDown((KeyCode)i))
+            {
+                Selected(i - (int)KeyCode.Alpha1);
+                slots[i - (int)KeyCode.Alpha1].GetComponent<Animator>().SetTrigger("Selected");
+            }
+        }
     }
 
     public Item BorrowItem(int index)
@@ -74,22 +90,15 @@ public class Inventory : MonoBehaviour
     public void Selected(int id)
     {
         if (id < 0 || id > items.Length) { return; }
+        UnSelect();
         selectedItem = items[id];
         onSelect?.Invoke(id);
         Debug.LogAssertion($"Selected {selectedItem}");
     }
 
-    public void UnSelect(int id)
+    public void UnSelect()
     {
-        if (id < 0 || id > items.Length) { return; }
-        if (selectedItem == items[id])
-        {
-            Debug.LogAssertion($"Unselected {selectedItem}");
-            selectedItem = null;
-
-            onUnselect?.Invoke();
-            
-        }
+        onUnselect?.Invoke();
     }
 
     public int GetIndex(Item item)

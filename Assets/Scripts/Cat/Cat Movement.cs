@@ -15,6 +15,7 @@ public class CatMovement : MonoBehaviour
 
     void Update()
     {
+        if (!PlayerCursor.Focused) { return; }
         if (Input.GetMouseButtonDown(0))
         {
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),out RaycastHit hitInfo, 50))

@@ -101,6 +101,9 @@ public class CameraController : MonoBehaviour
             Zoom(Input.mouseScrollDelta.y);
         }
         prevMousePos = Input.mousePosition;
+
+        Vector3 wasdDelta = new Vector3(Input.GetKey(KeyCode.A) ? -1 : (Input.GetKey(KeyCode.D) ? 1 : 0), 0, Input.GetKey(KeyCode.S) ? -1 : (Input.GetKey(KeyCode.W) ? 1 : 0));
+        transform.position = transform.position + transform.TransformVector(wasdDelta.normalized) * panSensitivity;
     }
 
     public void UpdateCamera()

@@ -4,20 +4,34 @@ using UnityEngine;
 
 public class PlayerCursor : MonoBehaviour
 {
+
+    private static bool focused = true;
+    public static bool Focused { get { return focused; } }
+
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.visible = false;
         transform.GetChild(0).GetComponent<SpriteRenderer>().color = PlayerColour.Get(Resident.Instance.record.ColourId);
     }
 
     // Update is called once per frame
     void Update()
     {
-        try
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            transform.position = CameraController.GetMouseWorldPosition();
+            focused = !focused;
         }
-        catch (UnityException e) {}
+        Cursor.visible = !focused;
+        Cursor.lockState = focused ? CursorLockMode.Confined : CursorLockMode.None;
+        if (focused)
+        {
+            try
+            {
+                transform.position = CameraController.GetMouseWorldPosition();
+                transform.position += transform.forward * -5f;
+            }
+            catch (UnityException e) { }
+        }
+        
     }
 }

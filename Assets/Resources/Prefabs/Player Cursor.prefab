@@ -33,7 +33,7 @@ Transform:
   m_Children:
   - {fileID: 5682407361345690378}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 51, y: -45, z: 0}
 --- !u!114 &2835466935459042127
 MonoBehaviour:
@@ -86,7 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5682407361345690378}
   - component: {fileID: 5445840589643853912}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
