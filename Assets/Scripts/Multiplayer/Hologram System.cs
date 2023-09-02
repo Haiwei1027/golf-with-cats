@@ -5,8 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Singleton class used by the resident to coordinate sending and receiving hologram data
-/// Also helps with cataloging hologram objects
+/// Class responsible for handling the network side (sending and handling letters) of instantiating network objects, updating holograms and destroying network objects
 /// </summary>
 public class HologramSystem : MonoBehaviour
 {

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class responsible for managing the cursor UI and keep track if the game is in focus
+/// </summary>
 public class PlayerCursor : MonoBehaviour
 {
 

@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
+
 /// <summary>
-/// This class acts as an interface to another peer(client or server)
-/// It handles sending and receiving of data from the connected socket
+/// Class responsible for abstracting the process of sending data over the network
 /// </summary>
 public class Postbox
 {

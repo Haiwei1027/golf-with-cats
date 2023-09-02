@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// This class will be used by a town to store and handle hologram letters
-/// It will help in receiving and sending hologram letter from multiple residents 
+/// Class responsible for relaying hologram letters from the clients to mimick peer to peer.
+/// It also keeps record of each hologram in use
 /// </summary>
 public class HologramDatabase
 {
@@ -26,6 +26,11 @@ public class HologramDatabase
         }
     }
 
+    /// <summary>
+    /// Add a new hologram to the database and also relays the letter
+    /// </summary>
+    /// <param name="sender">The client who created this network object</param>
+    /// <param name="letter">The hologram create letter</param>
     public void Add(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
@@ -41,6 +46,11 @@ public class HologramDatabase
         Debug.LogAssertion($"Sent {hologram.Id} {hologram.PrefabId} to all but {sender.Id}");
     }
 
+    /// <summary>
+    /// Updates a hologram in the database and also relays the letter
+    /// </summary>
+    /// <param name="sender">The client who updated this network object (must be owner)</param>
+    /// <param name="letter">The hologram update letter</param>
     public void Update(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();
@@ -57,6 +67,11 @@ public class HologramDatabase
         Debug.LogAssertion($"Sent {hologram.Id} to all but {sender.Id}");
     }
 
+    /// <summary>
+    /// Remove a hologram from the database and also relays the letter
+    /// </summary>
+    /// <param name="sender">The client who destroyed this network object (must be owner)</param>
+    /// <param name="letter">The hologram destroy letter</param>
     public void Remove(ResidentRecord sender, Letter letter)
     {
         ushort id = letter.ReadUShort();

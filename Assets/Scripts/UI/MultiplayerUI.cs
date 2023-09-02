@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Class responsible for updating the multiplayer UI in response to events
+/// </summary>
 public class MultiplayerUI : MonoBehaviour
 {
     public static MultiplayerUI Instance { get; private set; }

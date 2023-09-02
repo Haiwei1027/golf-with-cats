@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System;
+
 /// <summary>
-/// This class contains server logic
-/// It handles incoming connections and scheduling
+/// Class responsible for handling network traffic to and from clients and manage lobbies
 /// </summary>
 public class PostOffice : MonoBehaviour
 {

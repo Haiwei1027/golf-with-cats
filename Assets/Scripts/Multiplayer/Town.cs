@@ -5,8 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// This class acts as a container for a group of clients playing together
-/// It handles game logic for the group and synchronisation
+/// Class responsible for managing a lobby and orchestrating its resident's game session events
 /// </summary>
 public class Town
 {
@@ -23,8 +22,8 @@ public class Town
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="Mayor">the owner of the room/town</param>
-    /// <param name="capacity">capcity of the room/town</param>
+    /// <param name="Mayor">The creator of the town(lobby)</param>
+    /// <param name="capacity">Capcity of the town(lobby)</param>
     public Town(ResidentRecord Mayor,int capacity)
     {
         record = new TownRecord(GenerateID());
@@ -36,9 +35,9 @@ public class Town
         Join(Mayor);
     }
     /// <summary>
-    /// Generates a random 6 digit room/town id
+    /// Generates a random 6 digit id
     /// </summary>
-    /// <returns>6 digit room/town id</returns>
+    /// <returns>6 digit id</returns>
     private int GenerateID()
     {
         return new System.Random().Next(999_999 + 1);

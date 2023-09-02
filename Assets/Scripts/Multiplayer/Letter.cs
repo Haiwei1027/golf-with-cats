@@ -1,17 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO.IsolatedStorage;
-using System.Numerics;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Pool;
-/// <summary>
-/// This class acts as a data container and converter
-/// It handles data formatting, serialisation and deserialisation
-/// </summary> 
 
-//this assumes big endian
+
+/// <summary>
+/// Class responsible for encapsulating data for network traffic
+/// </summary>
+
+// NOTE This assumes big endian
 public class Letter
 {
     private static LinkedPool<Letter> pooledLetters = new LinkedPool<Letter>(() => new Letter(),(letter)=> letter.Clear());
@@ -28,14 +25,14 @@ public class Letter
         pointer = HeaderSize;
     }
 
-    public string DebugBytes()
+    public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
 
         sb.Append(ReadHeader(bytes));
-        foreach (byte b in bytes)
+        for (int i = 2; i < pointer; i++)
         {
-            sb.Append($" {b} ");
+            sb.Append(bytes[i]);
         }
 
         return sb.ToString();

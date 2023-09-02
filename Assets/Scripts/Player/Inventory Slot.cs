@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class responsible for updating the UI of an inventory slot
+/// </summary>
 public class InventorySlot : MonoBehaviour
 {
     [SerializeField] Image itemImage;

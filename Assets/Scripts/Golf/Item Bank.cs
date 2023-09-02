@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class that fetche and store a refernece for every item
+/// </summary>
 public class ItemBank : ScriptableObject
 {
     public static ItemBank Instance;

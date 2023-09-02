@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class responsible for controlling the camera based on player input and game state
+/// </summary>
 public class CameraController : MonoBehaviour
 {
     private static CameraController instance;

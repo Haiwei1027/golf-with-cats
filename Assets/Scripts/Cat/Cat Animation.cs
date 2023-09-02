@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// Class responsible for animating the cat based on the current cat state
+/// </summary>
 public class CatAnimation : MonoBehaviour
 {
     CatBits catbits = new CatBits();
@@ -19,6 +22,10 @@ public class CatAnimation : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Method to make the cat's neck and head rotate towards a world position
+    /// </summary>
+    /// <param name="position">The world position to look at</param>
     public void LookAtPosition(Vector3 position)
     {
         lookingAt = position;
@@ -39,6 +46,9 @@ public class CatAnimation : MonoBehaviour
     }
 }
 
+/// <summary>
+/// Class responsible for fetching and storing transforms of cat "bits" for ease of manipulating during procedural animation
+/// </summary>
 public class CatBits
 {
     Transform head;
@@ -47,6 +57,10 @@ public class CatBits
     public Transform Head {get {return head;} private set {head = value;}}
     public Transform Neck002 {get {return neck002;} private set {neck002 = value;}}
     public Transform Neck001 {get {return neck001;} private set {neck001 = value;}}
+    /// <summary>
+    /// Searches recursively down the root transform's tree to find transform of each body parts
+    /// </summary>
+    /// <param name="transform">Root transform of the cat model</param>
     public void FetchBones(Transform transform)
     {
         Debug.Log(transform.name);
@@ -54,7 +68,10 @@ public class CatBits
         neck002 = FindRecursive(transform, "Neck.002");
         neck001 = FindRecursive(transform, "Neck.001");
     }
-
+    /// <summary>
+    /// Searches recursively down the transform's tree to find transform of name
+    /// </summary>
+    /// <param name="transform">Transform being searched</param>
     public static Transform FindRecursive(Transform transform, string name)
     {
         if (transform.name == name)

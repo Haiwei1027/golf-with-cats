@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class responsible for letting player spawn in items from their inventory into the game
+/// </summary>
 public class GameItemSpawner : MonoBehaviour
 {
 

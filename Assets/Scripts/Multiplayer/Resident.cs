@@ -2,13 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
-using System.Net.Sockets;
 using System;
-using UnityEngine.UIElements;
 
 /// <summary>
-/// This class contains client logic
-/// It handles synchronisation and sharing actions to peers
+/// Class responsible for connecting to the server and handling network traffic to and from the server
 /// </summary>
 public class Resident : MonoBehaviour
 {

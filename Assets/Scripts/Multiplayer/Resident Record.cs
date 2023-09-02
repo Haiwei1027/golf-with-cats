@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This class contains fields to store resident data independent of its logic
+/// Class responsible for holding all data on a client/resident
 /// </summary>
 public class ResidentRecord
 {
@@ -39,7 +39,7 @@ public class ResidentRecord
     }
 
     /// <summary>
-    /// Created by server to store serverside playerdata
+    /// Constructor for server to store serverside playerdata
     /// </summary>
     /// <param name="postbox"></param>
     /// <param name="id"></param>
@@ -51,7 +51,7 @@ public class ResidentRecord
     }
 
     /// <summary>
-    /// Create record instance to store local player data
+    /// Constructor for client to store local player data
     /// </summary>
     /// <param name="postbox"></param>
     public ResidentRecord(Postbox postbox)
@@ -61,7 +61,7 @@ public class ResidentRecord
     }
 
     /// <summary>
-    /// Create record instance to store remote player data
+    /// Constructor for client to store remote player data
     /// </summary>
     /// <param name="id"></param>
     /// <param name="username"></param>

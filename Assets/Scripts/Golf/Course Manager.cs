@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class responsible for orchestrating events on the course
+/// </summary>
 public class CourseManager : MonoBehaviour
 {
     [SerializeField] private ushort catPrefabId;

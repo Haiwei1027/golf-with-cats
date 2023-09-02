@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class that's responsible for holding data on where to spawn the cats and the balls
+/// </summary>
 public class CatBallSpawn : MonoBehaviour
 {
     [SerializeField] private int colourId;

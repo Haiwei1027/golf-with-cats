@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
+/// <summary>
+/// Class responsible for holding items the player has and providing interface to access those items for other systems
+/// </summary>
 public class Inventory : MonoBehaviour
 {
     private static Inventory instance;

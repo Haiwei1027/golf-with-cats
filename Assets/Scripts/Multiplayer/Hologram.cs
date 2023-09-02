@@ -4,10 +4,9 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// This class is used to pack and unpack data from its target to and from bytes
-/// In addition on hologram database will also be used to cache creation details and recent state
+/// Class responsible for creating,updating and destroying network objects while also serialising,caching and deserialising their corresponding data
 /// </summary>
-public class Hologram
+public abstract class Hologram
 {
 
     private ushort id;
@@ -19,7 +18,13 @@ public class Hologram
 
     protected HologramTransceiver transceiver;
 
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="transceiver">The transceiver this hologram is going to be attached to (null for caching mode)</param>
+    /// <param name="id">The id</param>
+    /// <param name="prefabId">The index of the prefab this hologram represents in hologram system's prefab list</param>
+    /// <param name="ownerId">The owner resident's id</param>
     public Hologram(HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId)
     {
         this.transceiver = transceiver;
@@ -28,11 +33,15 @@ public class Hologram
         this.ownerId = ownerId;
     }
 
+    /// <summary>
+    /// Method to initialise a network object
+    /// </summary>
+    /// <param name="letter">The hologram create letter after the hologram type is read and network object is instantiated</param>
     public virtual void SetSpawn(Letter letter)
     {
-        
-    }
 
+    }
+    
     public static Hologram CreateHologram(HologramType type, HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId)
     {
         switch (type)
@@ -51,6 +60,11 @@ public class Hologram
         }
     }
 
+    /// <summary>
+    /// Method for writing a letter to inform other resident of the creation of this network object
+    /// </summary>
+    /// <param name="letter">Empty letter</param>
+    /// <returns>Letter with generic hologram details for others to instantiate</returns>
     public virtual Letter WriteCreate(Letter letter)
     {
         letter.Write(LetterType.HOLOGRAMCREATE);
@@ -60,11 +74,11 @@ public class Hologram
         return letter;
     }
 
-    public virtual void Initiate(Letter letter)
-    {
-        letter.Release();
-    }
-
+    /// <summary>
+    /// Method for writing a letter to inform other residents of the deletion of this network object
+    /// </summary>
+    /// <param name="letter">Empty letter</param>
+    /// <returns>Letter with hologram details for others to destroy</returns>
     public Letter WriteDestroy(Letter letter)
     {
         letter.Write(LetterType.HOLOGRAMDESTROY);
@@ -72,7 +86,11 @@ public class Hologram
         return letter;
     }
 
+    /// <summary>
+    /// Method for writing a letter to inform other residents this network object has updated
+    /// </summary>
     /// <param name="letter"></param>
+    /// <returns></returns>
     public virtual Letter WriteData(Letter letter)
     {
         letter.Write(LetterType.HOLOGRAMUPDATE);
@@ -80,261 +98,24 @@ public class Hologram
         return letter;
     }
 
+    /// <summary>
+    /// Method for reading an update letter and caching the data into the hologram
+    /// </summary>
+    /// <param name="letter">A hologram update letter</param>
     public virtual void CacheUpdate(Letter letter)
     {
 
     }
 
+    /// <summary>
+    /// Method for reading an update letter and applying its data to the hologram
+    /// </summary>
+    /// <param name="letter">An update letter</param>
     public virtual void ApplyData(Letter letter)
     {
 
     }
 }
 
-public class PositionHologram : Hologram
-{
 
-    protected Vector3 cachedPosition = Vector3.zero;
 
-    public PositionHologram(HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId) : base(transceiver, id, prefabId, ownerId)
-    {
-
-    }
-
-    public override Letter WriteData(Letter letter)
-    {
-        base.WriteData(letter);
-
-        if (transceiver != null)
-        {
-            cachedPosition = transceiver.transform.position;
-        }
-
-        letter.Write(cachedPosition.x);
-        letter.Write(cachedPosition.y);
-        letter.Write(cachedPosition.z);
-        return letter;
-    }
-
-    public override Letter WriteCreate(Letter letter)
-    {
-        base.WriteCreate(letter);
-        letter.Write((byte)HologramType.POSITION);
-        return letter;
-    }
-
-    public override void CacheUpdate(Letter letter)
-    {
-        cachedPosition.x = letter.ReadFloat();
-        cachedPosition.y = letter.ReadFloat();
-        cachedPosition.z = letter.ReadFloat();
-        letter.Release();
-    }
-
-    public override void ApplyData(Letter letter)
-    {
-        Vector3 position = Vector3.zero;
-        position.x = letter.ReadFloat();
-        position.y = letter.ReadFloat();
-        position.z = letter.ReadFloat();
-        transceiver.transform.position = position;
-
-        letter.Release();
-    }
-}
-
-public class TransformHologram : Hologram
-{
-    protected Vector3 cachedPosition = Vector3.zero;
-    protected Quaternion cachedRotation = Quaternion.identity;
-    protected Vector3 cachedScale = Vector3.one;
-
-    public TransformHologram(HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId) : base(transceiver, id, prefabId, ownerId)
-    {
-
-    }
-
-    public override Letter WriteData(Letter letter)
-    {
-        base.WriteData(letter);
-
-        if (transceiver != null)
-        {
-            cachedPosition = transceiver.transform.position;
-            cachedRotation = transceiver.transform.rotation;
-            cachedScale = transceiver.transform.localScale;
-        }
-
-        letter.Write(cachedPosition.x);
-        letter.Write(cachedPosition.y);
-        letter.Write(cachedPosition.z);
-
-        letter.Write(cachedRotation.x);
-        letter.Write(cachedRotation.y);
-        letter.Write(cachedRotation.z);
-        letter.Write(cachedRotation.w);
-
-        letter.Write(cachedScale.x);
-        letter.Write(cachedScale.y);
-        letter.Write(cachedScale.z);
-        return letter;
-    }
-
-    public override Letter WriteCreate(Letter letter)
-    {
-        base.WriteCreate(letter);
-        letter.Write((byte)HologramType.TRANSFORM);
-        return letter;
-    }
-
-    public override void CacheUpdate(Letter letter)
-    {
-        cachedPosition.x = letter.ReadFloat();
-        cachedPosition.y = letter.ReadFloat();
-        cachedPosition.z = letter.ReadFloat();
-
-        cachedRotation.x = letter.ReadFloat();
-        cachedRotation.y = letter.ReadFloat();
-        cachedRotation.z = letter.ReadFloat();
-        cachedRotation.w = letter.ReadFloat();
-
-        cachedScale.x = letter.ReadFloat();
-        cachedScale.y = letter.ReadFloat();
-        cachedScale.z = letter.ReadFloat();
-        letter.Release();
-    }
-
-    public override void ApplyData(Letter letter)
-    {
-        CacheUpdate(letter);
-
-        transceiver.transform.position = cachedPosition;
-        transceiver.transform.rotation = cachedRotation;
-        transceiver.transform.localScale = cachedScale;
-
-        letter.Release();
-    }
-}
-
-public class CatHologram : Hologram
-{
-    protected Vector3 cachedDestination = Vector3.zero;
-    protected Vector3 cachedLook = Vector3.zero;
-
-    protected CatAnimation catAnimation;
-    protected NavMeshAgent navAgent;
-
-    public CatHologram(HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId) : base(transceiver, id, prefabId, ownerId)
-    {
-        if (transceiver != null)
-        {
-            catAnimation = transceiver.GetComponent<CatAnimation>();
-            navAgent = transceiver.GetComponent<NavMeshAgent>();
-        }
-    }
-
-    public override Letter WriteCreate(Letter letter)
-    {
-        return base.WriteCreate(letter).Write((byte)HologramType.CAT);
-    }
-
-    public override Letter WriteData(Letter letter)
-    {
-        base.WriteData(letter);
-
-        if (transceiver != null)
-        {
-            cachedDestination = navAgent.destination;
-            cachedLook = catAnimation.lookingAt;
-        }
-
-        letter.Write(cachedDestination);
-
-        letter.Write(cachedLook);
-
-        return letter;
-    }
-
-    public override void ApplyData(Letter letter)
-    {
-        CacheUpdate(letter);
-
-        catAnimation.LookAtPosition(cachedLook);
-        navAgent.SetDestination(cachedDestination);
-    }
-
-    public override void CacheUpdate(Letter letter)
-    {
-        cachedDestination = letter.ReadVector3();
-        cachedLook = letter.ReadVector3();
-
-        letter.Release();
-    }
-}
-
-public class CursorHologram : Hologram
-{
-    private Vector3 position;
-    private int colourId;
-
-    public CursorHologram(HologramTransceiver transceiver, ushort id, ushort prefabId, int ownerId) : base(transceiver, id, prefabId, ownerId)
-    {
-    }
-
-    public override Letter WriteCreate(Letter letter)
-    {
-        base.WriteCreate(letter);
-        letter.Write((byte)HologramType.CURSOR);
-
-        if (transceiver != null)
-        {
-            colourId = Resident.Instance.record.ColourId;
-        }
-        letter.Write(colourId);
-        return letter;
-    }
-
-    public override void SetSpawn(Letter letter)
-    {
-        colourId = letter.ReadInt();
-
-        if (transceiver != null)
-        {
-            transceiver.transform.GetChild(0).GetComponent<SpriteRenderer>().color = PlayerColour.Get(colourId);
-        }
-    }
-
-    public override Letter WriteData(Letter letter)
-    {
-        base.WriteData(letter);
-
-        if (transceiver != null)
-        {
-            position = transceiver.transform.position;
-        }
-
-        letter.Write(position);
-        
-        return letter;
-    }
-
-    public override void CacheUpdate(Letter letter)
-    {
-        position = letter.ReadVector3();
-
-        letter.Release();
-    }
-
-    public override void ApplyData(Letter letter)
-    {
-        CacheUpdate(letter);
-
-        transceiver.transform.position = position;
-    }
-
-    public override void Initiate(Letter letter)
-    {
-        letter.ReadInt();
-        base.Initiate(letter);
-    }
-}

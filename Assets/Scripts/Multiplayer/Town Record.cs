@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// This class contains fields to store town data independent of its logic
-/// Also contains helper methods to modify the data
+/// Class responsible for storing town data 
 /// </summary>
 public class TownRecord
 {

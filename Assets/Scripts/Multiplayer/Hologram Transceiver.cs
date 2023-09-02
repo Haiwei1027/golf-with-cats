@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Monobehaviour attached on each hologram gameobject to store its byte data and synchronisation state
+/// Class responsible for network object behaviours
 /// </summary>
 public class HologramTransceiver : MonoBehaviour
 {
@@ -20,6 +20,12 @@ public class HologramTransceiver : MonoBehaviour
     private Hologram hologram;
     public Hologram Hologram { get { return hologram; } private set {  hologram = value; } }
 
+
+    /// <summary>
+    /// Method for initiating this network object
+    /// </summary>
+    /// <param name="id">Assigned id of this network object by from hologram system</param>
+    /// <param name="prefabId">index of this network object's prefab in the prefab list</param>
     public void Initiate(ushort id, ushort prefabId, int ownerId, Letter createLetter = null)
     {
         isOwner = false || isOwner;
@@ -44,6 +50,11 @@ public class HologramTransceiver : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Method for initiating this network object locally as the owner
+    /// </summary>
+    /// <param name="id">Assigned id of this network object by from hologram system</param>
+    /// <param name="prefabId">index of this network object's prefab in the prefab list</param>
     public void Initiate(ushort id, ushort prefabId)
     {
         isOwner = true;
@@ -55,11 +66,4 @@ public class HologramTransceiver : MonoBehaviour
         if (hologram == null) return;
         Resident.SendLetter(hologram.WriteDestroy(Letter.Get()));
     }
-}
-public enum HologramType : byte
-{
-    POSITION,
-    TRANSFORM,
-    CAT,
-    CURSOR
 }
