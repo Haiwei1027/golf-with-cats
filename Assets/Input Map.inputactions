@@ -1,0 +1,51 @@
+{
+    "name": "Input Map",
+    "maps": [
+        {
+            "name": "Game",
+            "id": "89e333cd-7e4b-4128-a799-6bce42e6b368",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "69a1169a-ace7-4900-add0-5e8f41cb3dc5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "770168a3-f6e3-47f2-be2a-230ed2a81463",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse & Keyboard",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Mouse & Keyboard",
+            "bindingGroup": "Mouse & Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

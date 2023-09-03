@@ -111,7 +111,7 @@ public class CameraController : MonoBehaviour
 
     public void UpdateCamera()
     {
-        if (!cameraTransform)
+        if (!cameraTransform) // TODO remove redundant code
         {
             cameraTransform = transform.GetChild(0);
             camera = cameraTransform.GetComponent<Camera>();
@@ -123,7 +123,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        TakeInput();
+        //TakeInput();
         UpdateCamera();
     }
 }
