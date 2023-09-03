@@ -163,6 +163,7 @@ public class Resident : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()

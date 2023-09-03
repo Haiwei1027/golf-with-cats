@@ -3,7 +3,12 @@ guid: 68071d5d9c0934b46a803f4be57bddf6
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Groass
+    second: {fileID: 2100000, guid: aa23fecb1fbe6754a87c200745d764eb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

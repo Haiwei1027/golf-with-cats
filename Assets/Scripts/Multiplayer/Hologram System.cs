@@ -22,7 +22,7 @@ public class HologramSystem : MonoBehaviour
         } 
     }
 
-    [SerializeField] GameObject[] prefabs;
+    [SerializeField] PrefabList prefabList;
 
     private List<HologramTransceiver> transceivers;
 
@@ -62,7 +62,7 @@ public class HologramSystem : MonoBehaviour
 
     public static GameObject Instantiate(ushort prefabId, Vector3 spawnPosition, Quaternion spawnRotation)
     {
-        GameObject spawned = Instantiate(Instance.prefabs[prefabId], spawnPosition, spawnRotation);
+        GameObject spawned = Instantiate(Instance.prefabList.Get(prefabId), spawnPosition, spawnRotation);
         try
         {
             HologramTransceiver transceiver = spawned.GetComponent<HologramTransceiver>();
@@ -91,7 +91,7 @@ public class HologramSystem : MonoBehaviour
         Debug.LogAssertion($"Received create {id} {prefabId}");
         HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
         if (transceiver != null) { return; }
-        transceiver = Instantiate(Instance.prefabs[prefabId]).GetComponent<HologramTransceiver>();
+        transceiver = Instantiate(Instance.prefabList.Get(prefabId)).GetComponent<HologramTransceiver>();
         transceiver.Initiate(id,prefabId,ownerId, letter);
         Instance.transceivers.Add(transceiver);
     }
