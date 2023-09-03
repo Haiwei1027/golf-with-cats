@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System;
+using UnityEngine.Assertions;
 
 /// <summary>
 /// Class responsible for connecting to the server and handling network traffic to and from the server
@@ -98,6 +99,11 @@ public class Resident : MonoBehaviour
     #region UI Methods
     public static void Connect(string username)
     {
+        if (Instance.record == null)
+        {
+            Instance.Initiate();
+        }
+
         Instance.record.Username = username;
         Debug.LogAssertion("Connecting");
         Instance.postbox.Connect(new IPEndPoint(Instance.useLoopback ? IPAddress.Loopback : IPAddress.Parse(Instance.ServerIP),PostOffice.Port));
@@ -160,15 +166,16 @@ public class Resident : MonoBehaviour
         record = new ResidentRecord(postbox);
     }
 
-    private void Awake()
+    void Awake()
     {
-        Instance = this;
         DontDestroyOnLoad(gameObject);
+        Instance = this;
+        Initiate();
     }
 
     void Start()
     {
-        Initiate();
+        
     }
 
     void FixedUpdate()

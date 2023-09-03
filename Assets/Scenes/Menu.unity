@@ -5069,9 +5069,9 @@ MonoBehaviour:
   lobbyIdInputField: {fileID: 2045751543}
   joinButton: {fileID: 1410751719}
   inLobbyUI: {fileID: 644036314}
-  startButton: {fileID: 0}
-  playerList: {fileID: 0}
-  leaveButton: {fileID: 0}
+  startButton: {fileID: 517928928}
+  playerList: {fileID: 2080781253}
+  leaveButton: {fileID: 782304520}
 --- !u!1 &2043443184
 GameObject:
   m_ObjectHideFlags: 0

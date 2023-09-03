@@ -44,6 +44,7 @@ public class MenuUI : MonoBehaviour
         Resident.onDisconnected += OnDisconnect;
         Resident.onJoinTown += OnJoinLobby;
         Resident.onLeaveTown += OnLeaveLobby;
+        Resident.onStartGame += OnStartGame;
     }
 
     private void Start()
@@ -54,31 +55,61 @@ public class MenuUI : MonoBehaviour
         Resident.Disconnect();
     }
 
-    public void OnDisconnect()
+    public void OnStartGame()
     {
 
     }
 
+    public void OnDisconnect()
+    {
+        connectUI.SetActive(true);
+        preLobbyUI.SetActive(false);
+        inLobbyUI.SetActive(false);
+    }
+
     public void OnConnected()
     {
-
+        connectUI.SetActive(false);
+        preLobbyUI.SetActive(true);
+        inLobbyUI.SetActive(false);
     }
 
     public void OnJoinLobby(int newPlayerId)
     {
         if (newPlayerId == Resident.Id)
         {
-
+            connectUI.SetActive(false);
+            preLobbyUI.SetActive(false);
+            inLobbyUI.SetActive(true);
         }
         else
         {
 
         }
+        for (int i = 0; i < Resident.Instance.record.Town.Population; i++)
+        {
+            playerList.GetChild(i).gameObject.SetActive(true);
+            Transform child = playerList.GetChild(i);
+            child.GetComponentInChildren<TMP_Text>().text = Resident.Instance.record.Town.Residents[i].Username;
+            foreach (Image image in child.GetComponentsInChildren<Image>())
+            {
+                image.color = PlayerColour.Get(Resident.Instance.record.Town.Residents[i].ColourId);
+            }
+        }
+        if (Resident.Instance.record.Town.Population < playerList.childCount)
+        {
+            for (int i = Resident.Instance.record.Town.Population; i < playerList.childCount; i++)
+            {
+                playerList.GetChild(i).gameObject.SetActive(false);
+            }
+        }
     }
 
     public void OnLeaveLobby()
     {
-
+        connectUI.SetActive(false);
+        preLobbyUI.SetActive(true);
+        inLobbyUI.SetActive(false);
     }
 
 }
