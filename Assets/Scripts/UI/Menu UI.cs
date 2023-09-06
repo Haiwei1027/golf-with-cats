@@ -25,6 +25,7 @@ public class MenuUI : MonoBehaviour
     [SerializeField] GameObject inLobbyUI;
 
     [SerializeField] Button startButton;
+    [SerializeField] TMP_Text lobbyIdLabel;
     [SerializeField] Transform playerList;
     [SerializeField] Button leaveButton;
 
