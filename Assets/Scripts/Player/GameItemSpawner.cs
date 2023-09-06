@@ -67,7 +67,8 @@ public class GameItemSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TakeInput();
+
+        //TakeInput();
         if (previewObject != null)
         {
             if (!spawning)
@@ -80,26 +81,6 @@ public class GameItemSpawner : MonoBehaviour
                     }catch(UnityException e) { Debug.LogException(e); }
                 }
             }
-        }
-    }
-
-    void TakeInput()
-    {
-        if (Input.GetMouseButtonDown(RightMouseButton))
-        {
-            CancelSpawn();
-        }
-        if (Input.GetMouseButtonDown(LeftMouseButton))
-        {
-            StartSpawn();
-        }
-        if (Input.GetMouseButton(LeftMouseButton))
-        {
-            Spawning();
-        }
-        if (Input.GetMouseButtonUp(LeftMouseButton))
-        {
-            EndSpawn();
         }
     }
 

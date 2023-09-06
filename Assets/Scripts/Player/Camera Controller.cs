@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Class responsible for controlling the camera based on player input and game state
@@ -23,6 +24,8 @@ public class CameraController : MonoBehaviour
     private Vector3 prevMousePos;
     private Transform cameraTransform;
     private new Camera camera;
+
+    private Vector3 moveVector = Vector3.zero;
 
     public static Camera Camera { get { return instance.camera; } }
 
@@ -59,51 +62,17 @@ public class CameraController : MonoBehaviour
         return Instance.camera.ScreenPointToRay(Input.mousePosition);
     }
 
-    void StartPan()
+    public void OnPan(InputValue value)
     {
-        //no code here as freelook is the only mode
+        Vector2 delta = value.Get<Vector2>();
+        moveVector.x = delta.x;
+        moveVector.z = delta.y;
     }
 
-    void Pan()
+    public void OnZoom(InputValue value)
     {
-        Vector3 mouseChange = Vector3.zero;
-        mouseChange.x = prevMousePos.x - Input.mousePosition.x;
-        mouseChange.z = prevMousePos.y - Input.mousePosition.y;
-        transform.position = transform.position + transform.TransformVector(mouseChange) * panSensitivity;
-    }
-
-    void EndPan()
-    {
-
-    }
-
-    void Zoom(float delta)
-    {
+        float delta = value.Get<float>();
         cameraSize = Mathf.Clamp(cameraSize + delta * zoomSensitivity, sizeRange.x, sizeRange.y);
-    }
-
-    void TakeInput()
-    {
-        if (Input.GetMouseButtonDown(MiddleMouseButton))
-        {
-            StartPan();
-        }
-        else if (Input.GetMouseButton(MiddleMouseButton))
-        {
-            Pan();
-        }
-        else if (Input.GetMouseButtonUp(MiddleMouseButton))
-        {
-            EndPan();
-        }
-        if (Input.mouseScrollDelta.y != 0)
-        {
-            Zoom(Input.mouseScrollDelta.y);
-        }
-        prevMousePos = Input.mousePosition;
-
-        Vector3 wasdDelta = new Vector3(Input.GetKey(KeyCode.A) ? -1 : (Input.GetKey(KeyCode.D) ? 1 : 0), 0, Input.GetKey(KeyCode.S) ? -1 : (Input.GetKey(KeyCode.W) ? 1 : 0));
-        transform.position = transform.position + transform.TransformVector(wasdDelta.normalized) * panSensitivity;
     }
 
     public void UpdateCamera()
@@ -118,9 +87,14 @@ public class CameraController : MonoBehaviour
         camera.orthographicSize = cameraSize;
     }
 
-    void Update()
+    private void Update()
     {
         //TakeInput();
         UpdateCamera();
+    }
+
+    private void FixedUpdate()
+    {
+        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
     }
 }

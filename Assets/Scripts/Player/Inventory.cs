@@ -56,15 +56,15 @@ public class Inventory : MonoBehaviour
 
     private void Update()
     {
-        for (int i = (int)KeyCode.Alpha1;i <= (int)KeyCode.Alpha9; i++)
+/*        for (int i = (int)KeyCode.Alpha1; i <= (int)KeyCode.Alpha9; i++)
         {
-            if (i- (int)KeyCode.Alpha1 > Capacity) break;
+            if (i - (int)KeyCode.Alpha1 > Capacity) break;
             if (Input.GetKeyDown((KeyCode)i))
             {
                 Selected(i - (int)KeyCode.Alpha1);
                 slots[i - (int)KeyCode.Alpha1].GetComponent<Animator>().SetTrigger("Selected");
             }
-        }
+        }*/
     }
 
     public Item BorrowItem(int index)
