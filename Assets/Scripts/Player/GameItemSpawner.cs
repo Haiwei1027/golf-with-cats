@@ -29,8 +29,6 @@ public class GameItemSpawner : MonoBehaviour
     {
         Inventory.Instance.onSelect += OnSelect;
         Inventory.Instance.onUnselect += OnUnselect;
-        enabled = false;
-        Resident.onStartGame += () => { enabled = true; };
     }
 
     private void OnDestroy()

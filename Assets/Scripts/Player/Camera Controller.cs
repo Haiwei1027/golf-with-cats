@@ -36,9 +36,6 @@ public class CameraController : MonoBehaviour
         cameraTransform = transform.GetChild(0);
         camera = cameraTransform.GetComponent<Camera>();
         prevMousePos = Vector3.zero;
-
-        enabled = false;
-        Resident.onStartGame += () => { enabled = true; };
     }
 
     /// <summary>
