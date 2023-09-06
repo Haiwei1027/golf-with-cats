@@ -17,8 +17,6 @@ public class InventorySlot : MonoBehaviour
     private int id;
     public int Id { get { return id; } set { id = value; name = name + " (" + id + ")"; } }
 
-    private bool selected;
-
     private void OnEnable()
     {
         button = GetComponent<Button>();
@@ -28,7 +26,6 @@ public class InventorySlot : MonoBehaviour
     public void Select()
     {
         Inventory.Instance.Selected(id);
-        selected = true;
     }
 
     private void Update()

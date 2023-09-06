@@ -21,6 +21,6 @@ public class CatBehaviour : MonoBehaviour
         {
             catAnimation.LookAtPosition(CameraController.GetMouseWorldPosition());
         }
-        catch (UnityException e) { }
+        catch (UnityException e) { Debug.LogException(e); }
     }
 }

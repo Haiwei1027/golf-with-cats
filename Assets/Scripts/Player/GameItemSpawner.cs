@@ -77,7 +77,7 @@ public class GameItemSpawner : MonoBehaviour
                     try
                     {
                         previewObject.transform.position = CameraController.GetMouseWorldPosition() + selectedItem.spawnOffset;
-                    }catch(UnityException e) { }
+                    }catch(UnityException e) { Debug.LogException(e); }
                 }
             }
         }
@@ -120,7 +120,7 @@ public class GameItemSpawner : MonoBehaviour
         }
         catch (UnityException e)
         {
-            
+            Debug.LogException(e);
             return;
         }
         Debug.LogAssertion("Start Spawn");

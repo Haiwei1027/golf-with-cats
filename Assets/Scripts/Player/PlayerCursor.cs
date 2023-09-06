@@ -33,7 +33,7 @@ public class PlayerCursor : MonoBehaviour
                 transform.position = CameraController.GetMouseWorldPosition();
                 transform.position += transform.forward * -5f;
             }
-            catch (UnityException e) { }
+            catch (UnityException e) { Debug.LogException(e); }
         }
         
     }
