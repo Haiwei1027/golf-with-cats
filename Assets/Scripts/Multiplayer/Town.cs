@@ -24,10 +24,9 @@ public class Town
     /// </summary>
     /// <param name="Mayor">The creator of the town(lobby)</param>
     /// <param name="capacity">Capcity of the town(lobby)</param>
-    public Town(ResidentRecord Mayor,int capacity)
+    public Town(ResidentRecord Mayor)
     {
         record = new TownRecord(GenerateID());
-        record.Capacity = capacity;
         record.MayorId = Mayor.Id;
         hologramDatabase = new HologramDatabase(this);
         colourPointer = new System.Random().Next(PlayerColour.COUNT);

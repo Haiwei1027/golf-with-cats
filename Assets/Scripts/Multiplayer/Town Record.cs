@@ -13,8 +13,7 @@ public class TownRecord
     public int MayorId { get { return mayorId; } set { mayorId = value; } }
     private int id;
     public int Id { get { return id; } set { id = value; } }
-    private int capacity;
-    public int Capacity { get { return capacity; } set { capacity = value; } }
+    public const int Capacity = 4;
 
     public void AddResident(ResidentRecord resident)
     {

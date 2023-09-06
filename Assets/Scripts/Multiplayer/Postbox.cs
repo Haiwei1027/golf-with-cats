@@ -14,7 +14,7 @@ public class Postbox
     private byte[] sendBuffer = new byte[PostOffice.SocketBufferSize];
     private byte[] headerBytes = new byte[sizeof(ushort)];
 
-    public event PostOffice.LetterHandler onLetter;
+    public LetterHandler letterHandler;
 
     private ResidentRecord owner;
     public ResidentRecord Owner
@@ -22,23 +22,21 @@ public class Postbox
         get { return owner; }
         set { owner = value; }
     }
-    private void CreateSocket()
+    private static Socket CreateSocket()
     {
-        socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+        return new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = PostOffice.SocketBufferSize,
             ReceiveBufferSize = PostOffice.SocketBufferSize
         };
     }
 
-    public Postbox()
-    {
-        CreateSocket();
-    }
+    public Postbox(LetterHandler letterHandler) : this(CreateSocket(), letterHandler) { }
 
-    public Postbox(Socket socket)
+    public Postbox(Socket socket, LetterHandler letterHandler)
     {
         this.socket = socket;
+        this.letterHandler = letterHandler;
     }
 
     public void Connect(IPEndPoint endpoint)
@@ -59,7 +57,8 @@ public class Postbox
     {
         Letter letter = LetterFactory.Get();
         letter.Copy(receiveBuffer, amount);
-        onLetter?.Invoke(owner, letter);
+        
+        letterHandler.Handle(owner, letter);
     }
 
     public bool ReceiveData()
