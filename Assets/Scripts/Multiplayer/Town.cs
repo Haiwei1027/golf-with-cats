@@ -60,7 +60,7 @@ public class Town
 
         newResident.ColourId = colourPointer;
         colourPointer = (colourPointer + 2)%PlayerColour.COUNT; //best prime
-        Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
+        Letter welcomeLetter = LetterFactory.Get().WriteTownWelcome(record,newResident);
         
         SendToAllResidents(welcomeLetter);
         hologramDatabase.Joined(newResident);
@@ -118,7 +118,7 @@ public class Town
     {
         if (sender.Id != record.MayorId) { return; }
 
-        SendToAllResidents(Letter.Get().Write(LetterType.STARTGAME));
+        SendToAllResidents(LetterFactory.Get().Write(LetterType.STARTGAME));
         started = true;
     }
 

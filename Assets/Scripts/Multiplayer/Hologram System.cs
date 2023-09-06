@@ -46,7 +46,7 @@ public class HologramSystem : MonoBehaviour
             if (!transceiver.isOwner || !transceiver.enabled) continue;
             if ((tickCounter - (i/2)) % transceiver.updateInterval == 0)
             {
-                Letter updateLetter = Letter.Get();
+                Letter updateLetter = LetterFactory.Get();
                 transceiver.Hologram.WriteData(updateLetter);
                 Resident.SendLetter(updateLetter);
             }

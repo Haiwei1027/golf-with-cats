@@ -168,7 +168,7 @@ public class PostOffice : MonoBehaviour
         };
 
         int id = GenerateUserID();
-        Letter welcomeLetter = Letter.Get().WriteWelcome(id);
+        Letter welcomeLetter = LetterFactory.Get().WriteWelcome(id);
         newPostbox.Send(welcomeLetter);
 
         residents.Add(new ResidentRecord(newPostbox, id));

@@ -21,7 +21,7 @@ public class HologramDatabase
     {
         foreach (var hologram in holograms)
         {
-            Letter letter = Letter.Get();
+            Letter letter = LetterFactory.Get();
             town.SendTo(hologram.WriteCreate(letter), newResident.Id);
         }
     }
@@ -41,7 +41,7 @@ public class HologramDatabase
         hologram.SetSpawn(letter);
         holograms.Add(hologram);
 
-        letter = Letter.Get();
+        letter = LetterFactory.Get();
         town.SendToAllButOne(hologram.WriteCreate(letter), sender.Id);
         Debug.LogAssertion($"Sent {hologram.Id} {hologram.PrefabId} to all but {sender.Id}");
     }
@@ -61,7 +61,7 @@ public class HologramDatabase
         }
         hologram.CacheUpdate(letter);
         
-        letter = Letter.Get();
+        letter = LetterFactory.Get();
         hologram.WriteData(letter);
         town.SendToAllButOne(letter, sender.Id);
         Debug.LogAssertion($"Sent {hologram.Id} to all but {sender.Id}");

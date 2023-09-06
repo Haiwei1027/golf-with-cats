@@ -120,22 +120,22 @@ public class Resident : MonoBehaviour
     public static void JoinTown(string lobbyCode)
     {
         int townID = int.Parse(lobbyCode);
-        Instance.postbox.Send(Letter.Get().WriteJoinTown(townID));
+        Instance.postbox.Send(LetterFactory.Get().WriteJoinTown(townID));
     }
 
     public static void CreateTown()
     {
-        Instance.postbox.Send(Letter.Get().Write(LetterType.CREATETOWN));
+        Instance.postbox.Send(LetterFactory.Get().Write(LetterType.CREATETOWN));
     }
 
     public static void StartGame()
     {
-        Instance.postbox.Send(Letter.Get().Write(LetterType.STARTGAME));
+        Instance.postbox.Send(LetterFactory.Get().Write(LetterType.STARTGAME));
     }
 
     public static void LeaveTown()
     {
-        Instance.postbox.Send(Letter.Get().Write(LetterType.LEAVETOWN));
+        Instance.postbox.Send(LetterFactory.Get().Write(LetterType.LEAVETOWN));
         Instance.town = null;
         onLeaveTown?.Invoke();
     }

@@ -33,7 +33,7 @@ public class HologramTransceiver : MonoBehaviour
         hologram = Hologram.CreateHologram(type, this, id, prefabId, ownerId);
         if (isOwner)
         {
-            Letter letter = Letter.Get();
+            Letter letter = LetterFactory.Get();
             Resident.SendLetter(hologram.WriteCreate(letter));
         }
         else
@@ -64,6 +64,6 @@ public class HologramTransceiver : MonoBehaviour
     void OnDestroy()
     {
         if (hologram == null) return;
-        Resident.SendLetter(hologram.WriteDestroy(Letter.Get()));
+        Resident.SendLetter(hologram.WriteDestroy(LetterFactory.Get()));
     }
 }
