@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Class responsible for controlling the camera based on player input and game state
@@ -26,6 +28,8 @@ public class CameraController : MonoBehaviour
     private new Camera camera;
 
     private Vector3 moveVector = Vector3.zero;
+
+    InputMap inputMap;
 
     public static Camera Camera { get { return instance.camera; } }
 
@@ -62,17 +66,28 @@ public class CameraController : MonoBehaviour
         return Instance.camera.ScreenPointToRay(Input.mousePosition);
     }
 
-    public void OnPan(InputValue value)
+    // public void OnPan(InputValue value)
+    // {
+    //     Vector2 delta = value.Get<Vector2>();
+    //     moveVector.x = delta.x;
+    //     moveVector.z = delta.y;
+    // }
+
+    public void OnPan(InputAction.CallbackContext context)
     {
-        Vector2 delta = value.Get<Vector2>();
+        Vector2 delta = context.ReadValue<Vector2>();
         moveVector.x = delta.x;
         moveVector.z = delta.y;
+        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
     }
 
-    public void OnZoom(InputValue value)
+    public void OnZoom(InputAction.CallbackContext context)
     {
-        float delta = value.Get<float>();
+        float delta = context.ReadValue<float>();
         cameraSize = Mathf.Clamp(cameraSize + delta * zoomSensitivity, sizeRange.x, sizeRange.y);
+        cameraTransform.localRotation = Quaternion.Euler(angleOfDepression, 0, 0);
+        cameraTransform.localPosition = cameraTransform.localRotation * -Vector3.forward * cameraDistance;
+        camera.orthographicSize = cameraSize;
     }
 
     public void UpdateCamera()
@@ -93,8 +108,22 @@ public class CameraController : MonoBehaviour
         UpdateCamera();
     }
 
-    private void FixedUpdate()
+    // private void FixedUpdate()
+    // {
+    //     transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
+    // }
+
+    private void OnEnable()
     {
-        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
+        inputMap = new InputMap();
+        inputMap.Game.Enable();
+
+        inputMap.Game.Pan.performed += OnPan;
+        inputMap.Game.Zoom.performed += OnZoom;
+    }
+
+    private void OnDisable()
+    {
+        inputMap.Game.Disable();
     }
 }
