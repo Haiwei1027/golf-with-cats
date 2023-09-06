@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuUI : MonoBehaviour
@@ -58,7 +59,7 @@ public class MenuUI : MonoBehaviour
 
     public void OnStartGame()
     {
-
+        SceneManager.LoadScene(1);
     }
 
     public void OnDisconnect()
@@ -82,6 +83,8 @@ public class MenuUI : MonoBehaviour
             connectUI.SetActive(false);
             preLobbyUI.SetActive(false);
             inLobbyUI.SetActive(true);
+
+            lobbyIdLabel.text = $"Room Id:{Resident.Instance.town.Id}";
         }
         else
         {
