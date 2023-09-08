@@ -5,7 +5,7 @@
 public enum LetterType : byte
 {
     /// <summary>
-    /// (ushort userId), Server send to a user when they connect
+    /// (int userId), Server send to a user when they connect
     /// </summary>
     WELCOME,
     /// <summary>
@@ -22,7 +22,7 @@ public enum LetterType : byte
     /// </summary>
     JOINTOWN,
     /// <summary>
-    /// (int townId, ushort newResidentId, int population, foreach resident [ushort Id, string username, int colourId]), 
+    /// (int townId, int newResidentId, int population, foreach resident [ushort Id, string username, int colourId]), 
     /// Server send to all lobby users when a new user join
     /// </summary>
     TOWNWELCOME,
@@ -31,7 +31,7 @@ public enum LetterType : byte
     /// </summary>
     LEAVETOWN,
     /// <summary>
-    /// (ushort leftResidentId), Server send to all lobby users when one leaves
+    /// (int leftResidentId), Server send to all lobby users when one leaves
     /// </summary>
     GOODBYE,
     /// <summary>
