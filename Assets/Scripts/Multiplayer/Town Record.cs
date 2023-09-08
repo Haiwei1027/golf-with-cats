@@ -26,6 +26,7 @@ public class TownRecord
             }
         }
         residents.Add(resident);
+        
         resident.Town = this;
     }
 
@@ -37,6 +38,7 @@ public class TownRecord
             residents.Remove(resident);
             resident.Town = null;
         }
+        
     }
 
     public TownRecord(int id)
