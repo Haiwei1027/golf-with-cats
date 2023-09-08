@@ -13,8 +13,6 @@ public class CameraController : MonoBehaviour
     private static CameraController instance;
     public static CameraController Instance { get { return instance; } }
 
-    private const int MiddleMouseButton = 2;
-
     public float zoomSensitivity;
     public float panSensitivity;
 
@@ -23,7 +21,6 @@ public class CameraController : MonoBehaviour
     public Vector2 sizeRange;
     public float cameraSize;
 
-    private Vector3 prevMousePos;
     private Transform cameraTransform;
     private new Camera camera;
 
@@ -42,7 +39,6 @@ public class CameraController : MonoBehaviour
     {
         cameraTransform = transform.GetChild(0);
         camera = cameraTransform.GetComponent<Camera>();
-        prevMousePos = Vector3.zero;
     }
 
     /// <summary>
@@ -66,19 +62,14 @@ public class CameraController : MonoBehaviour
         return Instance.camera.ScreenPointToRay(Input.mousePosition);
     }
 
-    // public void OnPan(InputValue value)
-    // {
-    //     Vector2 delta = value.Get<Vector2>();
-    //     moveVector.x = delta.x;
-    //     moveVector.z = delta.y;
-    // }
-
     public void OnPan(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
         moveVector.x = delta.x;
         moveVector.z = delta.y;
-        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
+        
+        //camera.orthographicSize/sizeRange.y is used to make pan speed relative to zoom level 
+        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity * (camera.orthographicSize/sizeRange.y);
     }
 
     public void OnZoom(InputAction.CallbackContext context)
@@ -92,11 +83,6 @@ public class CameraController : MonoBehaviour
 
     public void UpdateCamera()
     {
-        if (!cameraTransform) // TODO remove redundant code
-        {
-            cameraTransform = transform.GetChild(0);
-            camera = cameraTransform.GetComponent<Camera>();
-        }
         cameraTransform.localRotation = Quaternion.Euler(angleOfDepression, 0, 0);
         cameraTransform.localPosition = cameraTransform.localRotation * -Vector3.forward * cameraDistance;
         camera.orthographicSize = cameraSize;
@@ -107,11 +93,6 @@ public class CameraController : MonoBehaviour
         //TakeInput();
         UpdateCamera();
     }
-
-    // private void FixedUpdate()
-    // {
-    //     transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity;
-    // }
 
     private void OnEnable()
     {
