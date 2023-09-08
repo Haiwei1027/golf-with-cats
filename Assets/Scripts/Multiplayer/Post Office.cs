@@ -9,54 +9,59 @@ using System;
 /// </summary>
 public class PostOffice : MonoBehaviour
 {
-    private static PostOffice instance;
-
     public static readonly int Port = 25569;
     public static readonly int SocketBufferSize = 1024 * 1024;
     public static readonly int Capacity = 64;
 
-    private List<ResidentRecord> residents = new List<ResidentRecord>();
-    private List<ResidentRecord> leavers = new List<ResidentRecord>();
+    private static Dictionary<int, ResidentRecord> residents = new Dictionary<int, ResidentRecord>();
 
-    private List<int> abandonedTowns = new List<int>();
-    private Dictionary<int,Town> towns = new Dictionary<int,Town>();
+    private static Dictionary<int,Town> towns = new Dictionary<int,Town>();
 
-    private Socket serverSocket;
+    private static Socket serverSocket;
 
-    private bool listening = false;
-    private bool accepting = false;
+    private static bool listening = false;
+    private static bool accepting = false;
 
-    private System.Random randomGenerator;
+    public static System.Random randomGenerator;
+
+    private static PostOfficeLetterHandler letterHandler;
 
     public static Town MakeTown(ResidentRecord founder)
     {
         Town town = new Town(founder);
-        instance.towns.Add(town.Id, town);
+        towns.Add(town.Id, town);
         return town;
     }
 
     public static Town GetTown(int id)
     {
-        return instance.towns.GetValueOrDefault(id);
+        try
+        {
+            return towns[id];
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+        return null;
     }
 
-    public ResidentRecord GetResident(int id)
+    public static ResidentRecord GetResident(int id)
     {
-        foreach (ResidentRecord r in residents)
+        try
         {
-            if (r.Id == id)
-            {
-                return r;
-            }
+            return residents[id];
         }
-        Debug.Log($"No Resident of ID {id} Was Found");
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
         return null;
     }
 
     public void Awake()
     {
         Application.runInBackground = true;
-        instance = this;
     }
 
     void Start()
@@ -71,6 +76,7 @@ public class PostOffice : MonoBehaviour
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
         serverSocket.Listen(0);
         listening = true;
+        letterHandler = new PostOfficeLetterHandler();
     }
 
     void AcceptConnection()
@@ -82,7 +88,6 @@ public class PostOffice : MonoBehaviour
         Debug.Log("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
-        
     }
 
     int GenerateUserID()
@@ -99,59 +104,37 @@ public class PostOffice : MonoBehaviour
         Socket clientSocket = serverSocket.EndAccept(result);
         Debug.Log("Accepted");
         
-        Postbox newPostbox = new Postbox(clientSocket, new PostOfficeLetterHandler());
+        Postbox newPostbox = new Postbox(clientSocket, letterHandler);
 
         int id = GenerateUserID();
         Letter welcomeLetter = LetterFactory.Get().WriteWelcome(id);
         newPostbox.Send(welcomeLetter);
 
-        residents.Add(new ResidentRecord(newPostbox, id));
+        residents.Add(id, new ResidentRecord(newPostbox, id));
         accepting = false;
     }
 
     void Disconnect(ResidentRecord resident)
     {
+        GetTown(resident.Town.Id).Leave(resident);
         resident.Postbox.Close();
-        GetTown(resident.Town.Id).Leave(resident);   
     }
 
     void FixedUpdate()
     {
         AcceptConnection();
         bool stillConnected;
-        foreach (ResidentRecord resident in residents)
+        foreach (ResidentRecord resident in residents.Values)
         {
             stillConnected = resident.Postbox.ReceiveData();
-            if (!stillConnected)
-            {
-                leavers.Add(resident);
-                Debug.Log($"{resident.Username} Disconnected");
-                Disconnect(resident);
-            }
         }
-        foreach (ResidentRecord leaver in leavers)
-        {
-            residents.Remove(leaver);
-        }
-        leavers.Clear();
 
         Town town;
         foreach (int townId in towns.Keys)
         {
             town = towns[townId];
             town.Update();
-            if (town.Population <= 0)
-            {
-                abandonedTowns.Add(townId);
-            }
         }
-
-        
-        foreach (int townId in abandonedTowns)
-        {
-            towns.Remove(townId);
-        }
-        abandonedTowns.Clear();
     }
 
     void OnApplicationQuit()
@@ -160,7 +143,7 @@ public class PostOffice : MonoBehaviour
         {
             serverSocket.Close();
         }
-        foreach (ResidentRecord resident in residents)
+        foreach (ResidentRecord resident in residents.Values)
         {
             Disconnect(resident);
         }
