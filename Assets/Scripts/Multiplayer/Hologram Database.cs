@@ -43,7 +43,7 @@ public class HologramDatabase
 
         letter = LetterFactory.Get();
         town.SendToAllButOne(hologram.WriteCreate(letter), sender.Id);
-        Debug.LogAssertion($"Sent {hologram.Id} {hologram.PrefabId} to all but {sender.Id}");
+        Debug.Log($"Sent {hologram.Id} {hologram.PrefabId} to all but {sender.Id}");
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class HologramDatabase
         letter = LetterFactory.Get();
         hologram.WriteData(letter);
         town.SendToAllButOne(letter, sender.Id);
-        Debug.LogAssertion($"Sent {hologram.Id} to all but {sender.Id}");
+        Debug.Log($"Sent {hologram.Id} to all but {sender.Id}");
     }
 
     /// <summary>
