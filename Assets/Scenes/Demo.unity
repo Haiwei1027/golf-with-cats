@@ -6521,6 +6521,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1476951757646917523, guid: 39927b8a37f0fc24ab22a1ad8d8de09e,
         type: 3}
+      propertyPath: zoomSensitivity
+      value: -0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1476951757646917523, guid: 39927b8a37f0fc24ab22a1ad8d8de09e,
+        type: 3}
       propertyPath: angleOfDepression
       value: 51
       objectReference: {fileID: 0}

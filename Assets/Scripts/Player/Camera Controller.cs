@@ -88,10 +88,23 @@ public class CameraController : MonoBehaviour
         camera.orthographicSize = cameraSize;
     }
 
+    public void cameraMovement()
+    {
+        Vector2 delta = inputMap.Game.Pan.ReadValue<Vector2>();
+        moveVector.x = delta.x;
+        moveVector.z = delta.y;
+        
+        //camera.orthographicSize/sizeRange.y is used to make pan speed relative to zoom level 
+        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity * (camera.orthographicSize/sizeRange.y);
+    }
+
     private void Update()
     {
         //TakeInput();
         UpdateCamera();
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
+            cameraMovement();
     }
 
     private void OnEnable()
