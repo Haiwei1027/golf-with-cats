@@ -52,7 +52,7 @@ public class CameraController : MonoBehaviour
     /// <exception cref="UnityException">the mouse isn't hovering over the world</exception>
     public static Vector3 GetMouseWorldPosition() 
     {
-        Ray ray = Instance.camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Instance.camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -63,7 +63,7 @@ public class CameraController : MonoBehaviour
 
     public static Ray GetMouseRay()
     {
-        return Instance.camera.ScreenPointToRay(Input.mousePosition);
+        return Instance.camera.ScreenPointToRay(Mouse.current.position.ReadValue());
     }
 
     public void OnPan(InputAction.CallbackContext context)
@@ -93,14 +93,14 @@ public class CameraController : MonoBehaviour
         camera.orthographicSize = cameraSize;
     }
 
-    public void cameraMovement()
+    public void CameraPan()
     {
         Vector2 delta = inputMap.Game.Pan.ReadValue<Vector2>();
         moveVector.x = delta.x;
         moveVector.z = delta.y;
         
         //camera.orthographicSize/sizeRange.y is used to make pan speed relative to zoom level 
-        transform.position = transform.position + transform.TransformVector(moveVector) * (panSensitivity * zoomPanProportion);
+        transform.position += transform.TransformVector(moveVector) * (panSensitivity * zoomPanProportion);
     }
 
     private void Update()
@@ -109,7 +109,7 @@ public class CameraController : MonoBehaviour
         UpdateCamera();
         
         if (isPanning)
-            cameraMovement();
+            CameraPan();
     }
 
     private void OnEnable()

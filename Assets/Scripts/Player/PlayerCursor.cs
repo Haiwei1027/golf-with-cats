@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Class responsible for managing the cursor UI and keep track if the game is in focus
@@ -20,9 +21,10 @@ public class PlayerCursor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current.escapeKey.wasPressedThisFrame || Gamepad.current.startButton.wasPressedThisFrame)
         {
             focused = !focused;
+            Debug.Log("Focus");
         }
         Cursor.visible = !focused;
         Cursor.lockState = focused ? CursorLockMode.Confined : CursorLockMode.None;
