@@ -21,26 +21,28 @@ public class ResidentLetterHandler : LetterHandler
         {
             case LetterType.WELCOME:
                 HandleWelcome(postboxOwner, letter);
-                return;
+                break;
             case LetterType.TOWNWELCOME:
                 HandleTownWelcome(postboxOwner, letter);
-                return;
+                break;
             case LetterType.HOLOGRAMCREATE:
                 HologramSystem.HandleCreate(postboxOwner, letter);
-                return;
+                break;
             case LetterType.HOLOGRAMUPDATE:
                 HologramSystem.HandleUpdate(postboxOwner, letter);
-                return;
+                break;
             case LetterType.STARTGAME:
                 onStartGame?.Invoke();
-                return;
+                break;
             case LetterType.GOODBYE:
                 onLeaveTown?.Invoke(letter.ReadUShort());
-                return;
+                break;
             default:
                 Debug.LogError($"Unknown type {type}");
-                return;
+                break;
         }
+
+        letter.Release();
     }
 
     public override void Close()
@@ -84,13 +86,10 @@ public class ResidentLetterHandler : LetterHandler
             }
             else
             {
-                Debug.LogAssertion(displayColour);
                 record.ColourId = displayColour;
                 record.Town.AddResident(record);
             }
         }
-
-        letter.Release();
 
         onJoinTown?.Invoke(newResidentID);
     }
