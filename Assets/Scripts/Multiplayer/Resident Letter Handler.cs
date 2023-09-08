@@ -5,39 +5,60 @@ using UnityEngine;
 
 public class ResidentLetterHandler : LetterHandler
 {
-    
 
+    public event Action onConnected;
+    public event Action onDisconnected;
 
-    /*letterHandlers = new Dictionary<byte, PostOffice.LetterHandler>()
-        {
-            {(byte) LetterType.WELCOME, HandleWelcome },
-            { (byte)LetterType.TOWNWELCOME,HandleTownWelcome },
-            { (byte)LetterType.HOLOGRAMCREATE, HologramSystem.HandleCreate },
-            { (byte)LetterType.HOLOGRAMUPDATE, HologramSystem.HandleUpdate },
-            { (byte)LetterType.HOLOGRAMDESTROY, HologramSystem.HandleDestroy },
-            { (byte)LetterType.STARTGAME, HandleStartGame}
-        };*/
+    public event Action onStartGame;
+
+    public event Action<int> onJoinTown;
+    public event Action<int> onLeaveTown;
 
     public override void Handle(ResidentRecord postboxOwner, Letter letter)
     {
         LetterType type = letter.ReadType();
         switch (type)
         {
+            case LetterType.WELCOME:
+                HandleWelcome(postboxOwner, letter);
+                return;
+            case LetterType.TOWNWELCOME:
+                HandleTownWelcome(postboxOwner, letter);
+                return;
+            case LetterType.HOLOGRAMCREATE:
+                HologramSystem.HandleCreate(postboxOwner, letter);
+                return;
+            case LetterType.HOLOGRAMUPDATE:
+                HologramSystem.HandleUpdate(postboxOwner, letter);
+                return;
+            case LetterType.STARTGAME:
+                onStartGame?.Invoke();
+                return;
+            case LetterType.GOODBYE:
+                onLeaveTown?.Invoke(letter.ReadUShort());
+                return;
             default:
                 Debug.LogError($"Unknown type {type}");
                 return;
         }
     }
 
+    public override void Close()
+    {
+        onDisconnected?.Invoke();
+    }
+
     void HandleWelcome(ResidentRecord record, Letter letter)
     {
-        Debug.LogAssertion("Connected");
+        Debug.Log("Connected");
         record.Id = letter.ReadInt();
-        Debug.LogAssertion($"ID: {record.Id}");
+        Debug.Log($"ID: {record.Id}");
 
         letter.Clear();
         letter.WriteIntroduce(record.Username);
         record.Postbox.Send(letter);
+
+        onConnected?.Invoke();
     }
 
     void HandleTownWelcome(ResidentRecord record, Letter letter)
@@ -72,10 +93,5 @@ public class ResidentLetterHandler : LetterHandler
         letter.Release();
 
         onJoinTown?.Invoke(newResidentID);
-    }
-
-    public void HandleStartGame(ResidentRecord record, Letter letter)
-    {
-        onStartGame?.Invoke();
     }
 }

@@ -15,21 +15,13 @@ public class Resident : MonoBehaviour
     [SerializeField] string ServerIP;
     [SerializeField] bool useLoopback;
 
-    public static event Action onConnected;
-    public static event Action onDisconnected;
-
-    public static event Action onStartGame;
-
-    public static event Action<int> onJoinTown;
-    public static event Action onLeaveTown;
-
     public static int Id { get { return Instance.record.Id; } }
 
     public ResidentRecord record;
     public TownRecord town;
 
     public Postbox Postbox { get; private set; }
-    public LetterHandler LetterHandler { get { return Postbox.letterHandler; } }
+    public ResidentLetterHandler LetterHandler { get { return (ResidentLetterHandler)Postbox.letterHandler; } }
 
     private bool connected;
 
@@ -44,7 +36,7 @@ public class Resident : MonoBehaviour
         }
 
         Instance.record.Username = username;
-        Debug.LogAssertion("Connecting");
+        Debug.Log("Connecting");
         Instance.Postbox.Connect(new IPEndPoint(Instance.useLoopback ? IPAddress.Loopback : IPAddress.Parse(Instance.ServerIP),PostOffice.Port));
     }
 
@@ -53,7 +45,6 @@ public class Resident : MonoBehaviour
         Instance.Postbox.Close();
         Instance.record = null;
         Instance.town = null;
-        onDisconnected?.Invoke();
     }
 
     public static void JoinTown(string lobbyCode)
@@ -75,8 +66,6 @@ public class Resident : MonoBehaviour
     public static void LeaveTown()
     {
         Instance.Postbox.Send(LetterFactory.Get().Write(LetterType.LEAVETOWN));
-        Instance.town = null;
-        onLeaveTown?.Invoke();
     }
     #endregion
 
@@ -110,7 +99,7 @@ public class Resident : MonoBehaviour
             bool stillConnected = Postbox.ReceiveData();
             if (connected && !stillConnected)
             {
-                onDisconnected?.Invoke();
+                Postbox.Close();
             }
             connected = stillConnected;
         }
