@@ -21,58 +21,27 @@ public class PostOfficeLetterHandler : LetterHandler
         LetterType type = letter.ReadType();
         switch (type)
         {
+            case LetterType.INTRODUCE:
+                string username = letter.ReadString();
+                postboxOwner.Username = username;
+                Debug.Log($"{username} Connected");
+                break;
+            case LetterType.CREATETOWN:
+                PostOffice.MakeTown(postboxOwner);
+                break;
+            case LetterType.JOINTOWN:
+                Town town = PostOffice.GetTown(letter.ReadInt());
+                town.Join(postboxOwner);
+                break;
             default:
                 Debug.LogError($"Unknown type {type}");
-                return;
+                break;
         }
+        letter.Release();
     }
 
     public override void Close()
     {
         
-    }
-
-    public void HandleIntroduce(ResidentRecord sender, Letter letter)
-    {
-        string username = letter.ReadString();
-        sender.Username = username;
-        Debug.Log($"{username} Connected");
-        letter.Release();
-    }
-
-    public void HandleCreateTown(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.MakeTown(sender);
-    }
-
-    public void HandleJoinTown(ResidentRecord sender, Letter letter)
-    {
-        Town town = PostOffice.GetTown(letter.ReadInt());
-        town.Join(sender);
-    }
-
-    public void HandleLeaveTown(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.GetTown(sender.Town.Id).Leave(sender);
-    }
-
-    public void HandleHologramCreate(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.GetTown(sender.Town.Id).hologramDatabase.Add(sender, letter);
-    }
-
-    public void HandleHologramUpdate(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.GetTown(sender.Town.Id).hologramDatabase.Update(sender, letter);
-    }
-
-    public void HandleHologramDestroy(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.GetTown(sender.Town.Id).hologramDatabase.Remove(sender, letter);
-    }
-
-    public void HandleStartGame(ResidentRecord sender, Letter letter)
-    {
-        PostOffice.GetTown(sender.Town.Id).Start(sender, letter);
     }
 }
