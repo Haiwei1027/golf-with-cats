@@ -27,6 +27,9 @@ public class CameraController : MonoBehaviour
     private Vector3 moveVector = Vector3.zero;
 
     InputMap inputMap;
+    private float zoomPanProportion;
+
+    private bool isPanning = false;
 
     public static Camera Camera { get { return instance.camera; } }
 
@@ -39,6 +42,7 @@ public class CameraController : MonoBehaviour
     {
         cameraTransform = transform.GetChild(0);
         camera = cameraTransform.GetComponent<Camera>();
+        zoomPanProportion = camera.orthographicSize / sizeRange.y;
     }
 
     /// <summary>
@@ -64,12 +68,12 @@ public class CameraController : MonoBehaviour
 
     public void OnPan(InputAction.CallbackContext context)
     {
-        Vector2 delta = context.ReadValue<Vector2>();
-        moveVector.x = delta.x;
-        moveVector.z = delta.y;
-        
-        //camera.orthographicSize/sizeRange.y is used to make pan speed relative to zoom level 
-        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity * (camera.orthographicSize/sizeRange.y);
+        isPanning = true;
+    }
+
+    public void EndPan(InputAction.CallbackContext context)
+    {
+        isPanning = false;
     }
 
     public void OnZoom(InputAction.CallbackContext context)
@@ -79,6 +83,7 @@ public class CameraController : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(angleOfDepression, 0, 0);
         cameraTransform.localPosition = cameraTransform.localRotation * -Vector3.forward * cameraDistance;
         camera.orthographicSize = cameraSize;
+        zoomPanProportion = cameraSize / sizeRange.y;
     }
 
     public void UpdateCamera()
@@ -95,15 +100,15 @@ public class CameraController : MonoBehaviour
         moveVector.z = delta.y;
         
         //camera.orthographicSize/sizeRange.y is used to make pan speed relative to zoom level 
-        transform.position = transform.position + transform.TransformVector(moveVector) * panSensitivity * (camera.orthographicSize/sizeRange.y);
+        transform.position = transform.position + transform.TransformVector(moveVector) * (panSensitivity * zoomPanProportion);
     }
 
     private void Update()
     {
         //TakeInput();
         UpdateCamera();
-        var keyboard = Keyboard.current;
-        if (keyboard != null)
+        
+        if (isPanning)
             cameraMovement();
     }
 
@@ -113,7 +118,9 @@ public class CameraController : MonoBehaviour
         inputMap.Game.Enable();
 
         inputMap.Game.Pan.performed += OnPan;
+        inputMap.Game.Pan.canceled += EndPan;
         inputMap.Game.Zoom.performed += OnZoom;
+        
     }
 
     private void OnDisable()
