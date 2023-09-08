@@ -42,11 +42,11 @@ public class MenuUI : MonoBehaviour
 
     private void Listen()
     {
-        Resident.onConnected += OnConnected;
-        Resident.onDisconnected += OnDisconnect;
-        Resident.onJoinTown += OnJoinLobby;
-        Resident.onLeaveTown += OnLeaveLobby;
-        Resident.onStartGame += OnStartGame;
+        Resident.Instance.LetterHandler.onConnected += OnConnected;
+        Resident.Instance.LetterHandler.onDisconnected += OnDisconnect;
+        Resident.Instance.LetterHandler.onJoinTown += OnJoinLobby;
+        Resident.Instance.LetterHandler.onLeaveTown += OnLeaveLobby;
+        Resident.Instance.LetterHandler.onStartGame += OnStartGame;
     }
 
     private void Start()
@@ -90,6 +90,26 @@ public class MenuUI : MonoBehaviour
         {
 
         }
+        UpdateLobbyUI();
+    }
+
+    public void OnLeaveLobby(int leftResidentId)
+    {
+        if (leftResidentId == Resident.Id)
+        {
+            connectUI.SetActive(false);
+            preLobbyUI.SetActive(true);
+            inLobbyUI.SetActive(false);
+        }
+        else
+        {
+
+        }
+        UpdateLobbyUI();
+    }
+
+    public void UpdateLobbyUI()
+    {
         for (int i = 0; i < Resident.Instance.record.Town.Population; i++)
         {
             playerList.GetChild(i).gameObject.SetActive(true);
@@ -107,13 +127,6 @@ public class MenuUI : MonoBehaviour
                 playerList.GetChild(i).gameObject.SetActive(false);
             }
         }
-    }
-
-    public void OnLeaveLobby()
-    {
-        connectUI.SetActive(false);
-        preLobbyUI.SetActive(true);
-        inLobbyUI.SetActive(false);
     }
 
 }

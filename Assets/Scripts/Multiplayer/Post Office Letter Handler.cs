@@ -27,17 +27,22 @@ public class PostOfficeLetterHandler : LetterHandler
         }
     }
 
+    public override void Close()
+    {
+        
+    }
+
     public void HandleIntroduce(ResidentRecord sender, Letter letter)
     {
         string username = letter.ReadString();
         sender.Username = username;
-        Debug.LogAssertion($"{username} Connected");
+        Debug.Log($"{username} Connected");
         letter.Release();
     }
 
     public void HandleCreateTown(ResidentRecord sender, Letter letter)
     {
-        PostOffice.MakeTown(sender,);
+        PostOffice.MakeTown(sender);
     }
 
     public void HandleJoinTown(ResidentRecord sender, Letter letter)

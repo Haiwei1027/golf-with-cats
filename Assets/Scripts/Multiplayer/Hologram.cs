@@ -55,7 +55,7 @@ public abstract class Hologram
             case HologramType.CURSOR:
                 return new CursorHologram(transceiver, id, prefabId, ownerId);
             default:
-                Debug.LogAssertion("Unknown Hologram Type");
+                Debug.Log("Unknown Hologram Type");
                 return null;
         }
     }

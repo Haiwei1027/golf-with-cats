@@ -49,7 +49,7 @@ public class PostOffice : MonoBehaviour
                 return r;
             }
         }
-        Debug.LogAssertion($"No Resident of ID {id} Was Found");
+        Debug.Log($"No Resident of ID {id} Was Found");
         return null;
     }
 
@@ -61,13 +61,13 @@ public class PostOffice : MonoBehaviour
 
     void Start()
     {
-        Debug.LogAssertion("Starting");
+        Debug.Log("Starting");
         serverSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = SocketBufferSize,
             ReceiveBufferSize = SocketBufferSize
         };
-        Debug.LogAssertion("Binding");
+        Debug.Log("Binding");
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
         serverSocket.Listen(0);
         listening = true;
@@ -79,7 +79,7 @@ public class PostOffice : MonoBehaviour
         if (serverSocket == null) return;
         if (!serverSocket.IsBound) return;
         if (residents.Count >= Capacity) return;
-        Debug.LogAssertion("Accepting");
+        Debug.Log("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
         
@@ -97,7 +97,7 @@ public class PostOffice : MonoBehaviour
     void AcceptCallback(IAsyncResult result)
     {
         Socket clientSocket = serverSocket.EndAccept(result);
-        Debug.LogAssertion("Accepted");
+        Debug.Log("Accepted");
         
         Postbox newPostbox = new Postbox(clientSocket, new PostOfficeLetterHandler());
 

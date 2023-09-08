@@ -96,7 +96,7 @@ public class Inventory : MonoBehaviour
         UnSelect();
         selectedItem = items[id];
         onSelect?.Invoke(id);
-        Debug.LogAssertion($"Selected {selectedItem}");
+        Debug.Log($"Selected {selectedItem}");
     }
 
     public void UnSelect()
@@ -124,7 +124,7 @@ public class Inventory : MonoBehaviour
     public void Used(int id)
     {
         if (id < 0 || id > items.Length) { return; }
-        Debug.LogAssertion($"Used {id}");
+        Debug.Log($"Used {id}");
         onUse?.Invoke(items[id]);
 
         items[id] = null;

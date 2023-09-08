@@ -47,11 +47,11 @@ public class MultiplayerUI : MonoBehaviour
     public void Start()
     {
         OnDisconnected();
-        Resident.onConnected += OnConnected;
-        Resident.onDisconnected += OnDisconnected;
-        Resident.onJoinTown += OnJoinTown;
-        Resident.onLeaveTown += OnLeaveTown;
-        Resident.onStartGame += OnStartGame;
+        Resident.Instance.LetterHandler.onConnected += OnConnected;
+        Resident.Instance.LetterHandler.onDisconnected += OnDisconnected;
+        Resident.Instance.LetterHandler.onJoinTown += OnJoinTown;
+        Resident.Instance.LetterHandler.onLeaveTown += OnLeaveTown;
+        Resident.Instance.LetterHandler.onStartGame += OnStartGame;
     }
 
     public void OnConnected()
@@ -63,7 +63,7 @@ public class MultiplayerUI : MonoBehaviour
 
     public void OnDisconnected()
     {
-        Debug.LogAssertion("Disconnected");
+        Debug.Log("Disconnected");
         connectPanel.SetActive(true);
         lobbyPanel.SetActive(false);
         townPanel.SetActive(false);
@@ -90,11 +90,18 @@ public class MultiplayerUI : MonoBehaviour
 
     }
 
-    public void OnLeaveTown()
+    public void OnLeaveTown(int leftResidenId)
     {
-        connectPanel.SetActive(false);
-        lobbyPanel.SetActive(true);
-        townPanel.SetActive(false);
+        if (leftResidenId == Resident.Id)
+        {
+            connectPanel.SetActive(false);
+            lobbyPanel.SetActive(true);
+            townPanel.SetActive(false);
+        }
+        else
+        {
+
+        }
     }
 
     public void OnStartGame()

@@ -73,10 +73,8 @@ public class Postbox
                 // try receive content
                 if (expectLetterLength > 0 )
                 {
-                    //Debug.LogAssertion("Expect " + expectLetterLength);
                     if (socket.Available >= expectLetterLength)
                     {
-                        //Debug.LogAssertion("Availiable " + socket.Available);
                         receivedLetterSize = socket.Receive(receiveBuffer, expectLetterLength, SocketFlags.None);
                         expectLetterLength = 0;
                         moreLetters = true;
@@ -86,7 +84,6 @@ public class Postbox
                 // try receive header
                 else if (socket.Available >= Letter.HeaderSize)
                 {
-                    //Debug.LogAssertion("Header");
                     socket.Receive(headerBytes, Letter.HeaderSize, SocketFlags.None);
                     expectLetterLength = Letter.ReadHeader(headerBytes);
                     moreLetters = true;
@@ -98,7 +95,7 @@ public class Postbox
             }
             catch (SocketException ex)
             {
-                Debug.LogAssertion(ex);
+                Debug.LogException(ex);
             }
             if (receivedLetterSize > 0)
             {
@@ -113,27 +110,22 @@ public class Postbox
         try
         {
             ushort amount = letter.Ready(sendBuffer, 0);
-            if ((LetterType)sendBuffer[2] != LetterType.HOLOGRAMUPDATE)
-            {
-                Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
-            }
             socket.Send(sendBuffer, amount, SocketFlags.None);
-            //Debug.LogAssertion("Sent");
             if (!release)
             {
                 return;
             }
             letter.Release();
-            //Debug.LogAssertion("Released");
         }
         catch (SocketException ex)
         {
-            Debug.LogAssertion(ex);
+            Debug.LogException(ex);
         }
     }
 
     public void Close()
     {
+        letterHandler.Close();
         if (socket != null)
         {
             socket.Close();

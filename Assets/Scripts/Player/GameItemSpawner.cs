@@ -50,7 +50,7 @@ public class GameItemSpawner : MonoBehaviour
             if (selectedItem.previewPrefab == null) { return; }
 
             previewObject = Instantiate(selectedItem.previewPrefab);
-            Debug.LogAssertion("Spawned Preview");
+            Debug.Log("Spawned Preview");
         }
         else
         {
@@ -104,7 +104,7 @@ public class GameItemSpawner : MonoBehaviour
             Debug.LogException(e);
             return;
         }
-        Debug.LogAssertion("Start Spawn");
+        Debug.Log("Start Spawn");
 
         spawnPlane = new Plane(Vector3.up, spawnBase);
         dragLine.gameObject.SetActive(false);
@@ -129,11 +129,11 @@ public class GameItemSpawner : MonoBehaviour
     private void EndSpawn()
     {
         if (!spawning) { return; }
-        Debug.LogAssertion("End Spawn");
+        Debug.Log("End Spawn");
         GameObject spawned = HologramSystem.Instantiate(selectedItem.prefabId, spawnBase + selectedItem.spawnOffset, Quaternion.LookRotation(-flingVector, Vector3.up));
 
         flingVector = flingVector.normalized * selectedItem.flingFunction.Evaluate(flingVector.magnitude / maxDragDist);
-        Debug.LogAssertion(flingVector.magnitude);
+        Debug.Log(flingVector.magnitude);
         spawned.GetComponent<Rigidbody>().velocity = flingVector;
 
         Inventory.Instance.Used(selectedId);
