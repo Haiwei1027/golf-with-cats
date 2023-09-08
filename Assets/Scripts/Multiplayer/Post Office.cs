@@ -24,7 +24,7 @@ public class PostOffice : MonoBehaviour
 
     public static System.Random randomGenerator;
 
-    private static PostOfficeLetterHandler letterHandler;
+    public static PostOfficeLetterHandler letterHandler;
 
     public static Town MakeTown(ResidentRecord founder)
     {
