@@ -30,7 +30,7 @@ public class Town
         record.MayorId = Mayor.Id;
         hologramDatabase = new HologramDatabase(this);
         colourPointer = new System.Random().Next(PlayerColour.COUNT);
-        Debug.LogAssertion($"Town {Id} created");
+        Debug.Log($"Town {Id} created");
         Join(Mayor);
     }
     /// <summary>
@@ -49,7 +49,7 @@ public class Town
     /// <returns></returns>
     public bool Join(ResidentRecord newResident)
     {
-        if (record.Population >= record.Capacity)
+        if (record.Population >= TownRecord.Capacity)
         {
             return false;
         }
@@ -63,7 +63,7 @@ public class Town
         
         SendToAllResidents(welcomeLetter);
         hologramDatabase.Joined(newResident);
-        Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
+        Debug.Log($"Resident {newResident.Id} joined {record.Id}");
         return true;
     }
 
@@ -100,7 +100,7 @@ public class Town
     public void Leave(ResidentRecord resident)
     {
         record.RemoveResident(resident);
-        Debug.LogAssertion($"Resident {resident.Id} left {record.Id}");
+        Debug.Log($"Resident {resident.Id} left {record.Id}");
         if (resident.Id == record.MayorId)
         {
             ElectNewMayor();
