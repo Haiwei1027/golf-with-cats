@@ -19,6 +19,8 @@ public class Town
     private bool started = false;
     private int colourPointer;
 
+    private TownLetterHandler letterHandler;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -27,6 +29,7 @@ public class Town
     public Town(ResidentRecord Mayor)
     {
         record = new TownRecord(GenerateID());
+        letterHandler = new TownLetterHandler(this);
         record.MayorId = Mayor.Id;
         hologramDatabase = new HologramDatabase(this);
         colourPointer = new System.Random().Next(PlayerColour.COUNT);
@@ -56,6 +59,7 @@ public class Town
 
         newResident.Town = record;
         record.AddResident(newResident);
+        newResident.Postbox.letterHandler = letterHandler;
 
         newResident.ColourId = colourPointer;
         colourPointer = (colourPointer + 2)%PlayerColour.COUNT; //best prime
@@ -65,6 +69,37 @@ public class Town
         hologramDatabase.Joined(newResident);
         Debug.Log($"Resident {newResident.Id} joined {record.Id}");
         return true;
+    }
+
+    public void Leave(ResidentRecord resident)
+    {
+        record.RemoveResident(resident);
+        resident.Postbox.letterHandler = PostOffice.letterHandler;
+
+        Debug.Log($"Resident {resident.Id} left {record.Id}");
+        if (resident.Id == record.MayorId)
+        {
+            ElectNewMayor();
+        }
+    }
+
+    public void ElectNewMayor()
+    {
+        if (record.Population <= 0) { return; }
+        record.MayorId = record.Residents.First().Id;
+    }
+
+    public void Start(ResidentRecord sender, Letter letter)
+    {
+        if (sender.Id != record.MayorId) { return; }
+
+        SendToAllResidents(LetterFactory.Get().Write(LetterType.STARTGAME));
+        started = true;
+    }
+
+    public void Update()
+    {
+        if (!started) { return; }
     }
 
     public void SendToAllResidents(Letter letter, bool release = true)
@@ -95,34 +130,5 @@ public class Town
         }
         if (!release) { return; }
         letter.Release();
-    }
-
-    public void Leave(ResidentRecord resident)
-    {
-        record.RemoveResident(resident);
-        Debug.Log($"Resident {resident.Id} left {record.Id}");
-        if (resident.Id == record.MayorId)
-        {
-            ElectNewMayor();
-        }
-    }
-
-    public void ElectNewMayor()
-    {
-        if (record.Population <= 0) { return; }
-        record.MayorId = record.Residents.First().Id;
-    }
-
-    public void Start(ResidentRecord sender, Letter letter)
-    {
-        if (sender.Id != record.MayorId) { return; }
-
-        SendToAllResidents(LetterFactory.Get().Write(LetterType.STARTGAME));
-        started = true;
-    }
-
-    public void Update()
-    {
-        if (!started) { return; }
     }
 }
