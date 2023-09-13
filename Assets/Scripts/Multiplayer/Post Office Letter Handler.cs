@@ -31,6 +31,6 @@ public class PostOfficeLetterHandler : LetterHandler
 
     public override void Close(Postbox postbox)
     {
-        PostOffice.KickResident(postbox.Owner);
+        PostOffice.KickResident(postbox.Owner.Id);
     }
 }

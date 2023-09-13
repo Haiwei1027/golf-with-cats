@@ -56,7 +56,7 @@ public class ResidentLetterHandler : LetterHandler
         record.Id = letter.ReadInt();
         Debug.Log($"ID: {record.Id}");
 
-        letter.Clear();
+        letter = LetterFactory.Get();    
         letter.WriteIntroduce(record.Username);
         record.Postbox.Send(letter);
 
