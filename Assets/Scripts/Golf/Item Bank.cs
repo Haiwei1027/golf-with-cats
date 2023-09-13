@@ -14,7 +14,7 @@ public class ItemBank : ScriptableObject
     public static void LoadAllItems()
     {
         items = Resources.LoadAll<Item>("Items");
-        Debug.LogAssertion($"Loaded {items.Length} items");
+        Debug.Log($"Loaded {items.Length} items");
     }
 
     public static Item GetItem(string name)

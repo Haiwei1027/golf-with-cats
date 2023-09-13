@@ -14,7 +14,7 @@ public class Postbox
     private byte[] sendBuffer = new byte[PostOffice.SocketBufferSize];
     private byte[] headerBytes = new byte[sizeof(ushort)];
 
-    public event PostOffice.LetterHandler onLetter;
+    public LetterHandler letterHandler;
 
     private ResidentRecord owner;
     public ResidentRecord Owner
@@ -22,23 +22,21 @@ public class Postbox
         get { return owner; }
         set { owner = value; }
     }
-    private void CreateSocket()
+    private static Socket CreateSocket()
     {
-        socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+        return new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = PostOffice.SocketBufferSize,
             ReceiveBufferSize = PostOffice.SocketBufferSize
         };
     }
 
-    public Postbox()
-    {
-        CreateSocket();
-    }
+    public Postbox(LetterHandler letterHandler) : this(CreateSocket(), letterHandler) { }
 
-    public Postbox(Socket socket)
+    public Postbox(Socket socket, LetterHandler letterHandler)
     {
         this.socket = socket;
+        this.letterHandler = letterHandler;
     }
 
     public void Connect(IPEndPoint endpoint)
@@ -57,11 +55,10 @@ public class Postbox
 
     private void HandleData(int amount)
     {
-        Letter letter = Letter.Get();
+        Letter letter = LetterFactory.Get();
         letter.Copy(receiveBuffer, amount);
-        onLetter?.Invoke(owner, letter);
-        if ((LetterType)receiveBuffer[0] == LetterType.HOLOGRAMUPDATE) { return; }
-        Debug.LogAssertion("Got Letter " + (LetterType)receiveBuffer[0]);
+           
+        letterHandler.Handle(owner, letter);
     }
 
     public bool ReceiveData()
@@ -76,10 +73,8 @@ public class Postbox
                 // try receive content
                 if (expectLetterLength > 0 )
                 {
-                    //Debug.LogAssertion("Expect " + expectLetterLength);
                     if (socket.Available >= expectLetterLength)
                     {
-                        //Debug.LogAssertion("Availiable " + socket.Available);
                         receivedLetterSize = socket.Receive(receiveBuffer, expectLetterLength, SocketFlags.None);
                         expectLetterLength = 0;
                         moreLetters = true;
@@ -89,7 +84,6 @@ public class Postbox
                 // try receive header
                 else if (socket.Available >= Letter.HeaderSize)
                 {
-                    //Debug.LogAssertion("Header");
                     socket.Receive(headerBytes, Letter.HeaderSize, SocketFlags.None);
                     expectLetterLength = Letter.ReadHeader(headerBytes);
                     moreLetters = true;
@@ -101,7 +95,7 @@ public class Postbox
             }
             catch (SocketException ex)
             {
-                Debug.LogAssertion(ex);
+                Debug.LogException(ex);
             }
             if (receivedLetterSize > 0)
             {
@@ -116,27 +110,22 @@ public class Postbox
         try
         {
             ushort amount = letter.Ready(sendBuffer, 0);
-            if ((LetterType)sendBuffer[2] != LetterType.HOLOGRAMUPDATE)
-            {
-                Debug.LogAssertion("Prepared " + (LetterType)sendBuffer[2]);
-            }
             socket.Send(sendBuffer, amount, SocketFlags.None);
-            //Debug.LogAssertion("Sent");
             if (!release)
             {
                 return;
             }
             letter.Release();
-            //Debug.LogAssertion("Released");
         }
         catch (SocketException ex)
         {
-            Debug.LogAssertion(ex);
+            Debug.LogException(ex);
         }
     }
 
     public void Close()
     {
+        letterHandler.Close(this);
         if (socket != null)
         {
             socket.Close();

@@ -19,19 +19,21 @@ public class Town
     private bool started = false;
     private int colourPointer;
 
+    private TownLetterHandler letterHandler;
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="Mayor">The creator of the town(lobby)</param>
     /// <param name="capacity">Capcity of the town(lobby)</param>
-    public Town(ResidentRecord Mayor,int capacity)
+    public Town(ResidentRecord Mayor)
     {
         record = new TownRecord(GenerateID());
-        record.Capacity = capacity;
+        letterHandler = new TownLetterHandler(this);
         record.MayorId = Mayor.Id;
         hologramDatabase = new HologramDatabase(this);
         colourPointer = new System.Random().Next(PlayerColour.COUNT);
-        Debug.LogAssertion($"Town {Id} created");
+        Debug.Log($"Town {Id} created");
         Join(Mayor);
     }
     /// <summary>
@@ -50,22 +52,64 @@ public class Town
     /// <returns></returns>
     public bool Join(ResidentRecord newResident)
     {
-        if (record.Population >= record.Capacity)
+        if (record.Population >= TownRecord.Capacity)
         {
             return false;
         }
 
         newResident.Town = record;
         record.AddResident(newResident);
+        newResident.Postbox.letterHandler = letterHandler;
 
         newResident.ColourId = colourPointer;
         colourPointer = (colourPointer + 2)%PlayerColour.COUNT; //best prime
-        Letter welcomeLetter = Letter.Get().WriteTownWelcome(record,newResident);
+        Letter welcomeLetter = LetterFactory.Get().WriteTownWelcome(record,newResident);
         
         SendToAllResidents(welcomeLetter);
         hologramDatabase.Joined(newResident);
-        Debug.LogAssertion($"Resident {newResident.Id} joined {record.Id}");
+        Debug.Log($"Resident {newResident.Id} joined {record.Id}");
         return true;
+    }
+
+    public void Leave(ResidentRecord resident)
+    {
+        record.RemoveResident(resident);
+        if (Population <= 0 )
+        {
+            Stop();
+            return;
+        }
+        resident.Postbox.letterHandler = PostOffice.letterHandler;
+
+        Debug.Log($"Resident {resident.Id} left {record.Id}");
+        if (resident.Id == record.MayorId)
+        {
+            ElectNewMayor();
+        }
+    }
+
+    public void ElectNewMayor()
+    {
+        if (record.Population <= 0) { return; }
+        record.MayorId = record.Residents.First().Id;
+    }
+
+    public void Start(ResidentRecord sender, Letter letter)
+    {
+        if (sender.Id != record.MayorId) { return; }
+
+        SendToAllResidents(LetterFactory.Get().Write(LetterType.STARTGAME));
+        started = true;
+    }
+
+    public void Update()
+    {
+        if (!started) { return; }
+    }
+
+    public void Stop()
+    {
+        PostOffice.DestroyTown(Id);
     }
 
     public void SendToAllResidents(Letter letter, bool release = true)
@@ -96,34 +140,5 @@ public class Town
         }
         if (!release) { return; }
         letter.Release();
-    }
-
-    public void Leave(ResidentRecord resident)
-    {
-        record.RemoveResident(resident);
-        Debug.LogAssertion($"Resident {resident.Id} left {record.Id}");
-        if (resident.Id == record.MayorId)
-        {
-            ElectNewMayor();
-        }
-    }
-
-    public void ElectNewMayor()
-    {
-        if (record.Population <= 0) { return; }
-        record.MayorId = record.Residents.First().Id;
-    }
-
-    public void Start(ResidentRecord sender, Letter letter)
-    {
-        if (sender.Id != record.MayorId) { return; }
-
-        SendToAllResidents(Letter.Get().Write(LetterType.STARTGAME));
-        started = true;
-    }
-
-    public void Update()
-    {
-        if (!started) { return; }
     }
 }

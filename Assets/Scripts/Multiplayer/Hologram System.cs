@@ -15,7 +15,7 @@ public class HologramSystem : MonoBehaviour
         {
             if (instance != null)
             {
-                Debug.LogAssertion("Multiple HologramSystem Instances");
+                Debug.Log("Multiple HologramSystem Instances");
                 return;
             }
             instance = value; 
@@ -46,7 +46,7 @@ public class HologramSystem : MonoBehaviour
             if (!transceiver.isOwner || !transceiver.enabled) continue;
             if ((tickCounter - (i/2)) % transceiver.updateInterval == 0)
             {
-                Letter updateLetter = Letter.Get();
+                Letter updateLetter = LetterFactory.Get();
                 transceiver.Hologram.WriteData(updateLetter);
                 Resident.SendLetter(updateLetter);
             }
@@ -67,7 +67,7 @@ public class HologramSystem : MonoBehaviour
         {
             HologramTransceiver transceiver = spawned.GetComponent<HologramTransceiver>();
             ushort id = GenerateHologramId();
-            Debug.LogAssertion($"Instantiated locally {id}, {prefabId}");
+            Debug.Log($"Instantiated locally {id}, {prefabId}");
             transceiver.Initiate(id, prefabId);
             Instance.transceivers.Add(transceiver);
         }catch (NullReferenceException e)
@@ -88,7 +88,7 @@ public class HologramSystem : MonoBehaviour
         ushort prefabId = letter.ReadUShort();
         int ownerId = letter.ReadInt();
         HologramType hologramType = (HologramType)letter.ReadByte();
-        Debug.LogAssertion($"Received create {id} {prefabId}");
+        Debug.Log($"Received create {id} {prefabId}");
         HologramTransceiver transceiver = Instance.transceivers.Where(t => t.Id == id).FirstOrDefault();
         if (transceiver != null) { return; }
         transceiver = Instantiate(Instance.prefabList.Get(prefabId)).GetComponent<HologramTransceiver>();
@@ -99,7 +99,6 @@ public class HologramSystem : MonoBehaviour
     public static void HandleUpdate(ResidentRecord _, Letter letter)
     {
         ushort id = letter.ReadUShort();
-        //Debug.LogAssertion($"Received Update {id}");
         HologramTransceiver transceiver = Instance.transceivers.Find(t => t.Id == id);
         transceiver.Hologram.ApplyData(letter);
     }

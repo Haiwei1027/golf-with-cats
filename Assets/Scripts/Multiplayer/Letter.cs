@@ -11,8 +11,6 @@ using UnityEngine.Pool;
 // NOTE This assumes big endian
 public class Letter
 {
-    private static LinkedPool<Letter> pooledLetters = new LinkedPool<Letter>(() => new Letter(),(letter)=> letter.Clear());
-
     public static readonly ushort HeaderSize = sizeof(ushort);
 
     private byte[] bytes;
@@ -83,11 +81,6 @@ public class Letter
         return this;
     }
 
-    public static Letter Get()
-    {
-        return pooledLetters.Get();
-    }
-
     public Letter Clear()
     {
         pointer = HeaderSize;
@@ -96,7 +89,7 @@ public class Letter
 
     public void Release()
     {
-        pooledLetters.Release(this);
+        LetterFactory.Release(this);
     }
 
     /// <summary>
@@ -114,7 +107,6 @@ public class Letter
     /// </summary>
     /// <param name="array">the buffer receiving the data</param>
     /// <param name="startIndex">the index the data will start to be written at</param>
-    /// <returns></returns>
     public ushort Ready(byte[] array, int startIndex)
     {
         WriteHeader();
@@ -122,6 +114,9 @@ public class Letter
         return pointer;
     }
 
+    /// <summary>
+    /// Writes the written amount as the header bytes
+    /// </summary>
     public Letter WriteHeader()
     {
         bytes[0] = (byte)((pointer - HeaderSize) >> 8);
@@ -134,6 +129,7 @@ public class Letter
         return (ushort)(headerBytes[1] | (byte)(headerBytes[1] << 8));
     }
 
+    #region Serialisation/Deserialisation Methods
     public Letter Write(byte value)
     {
         bytes[pointer] = value;
@@ -238,7 +234,7 @@ public class Letter
         return value;
     }
 
-    public Letter Write(UnityEngine.Vector3 value)
+    public Letter Write(Vector3 value)
     {
         Write(value.x);
         Write(value.y);
@@ -247,15 +243,15 @@ public class Letter
         return this;
     }
 
-    public UnityEngine.Vector3 ReadVector3()
+    public Vector3 ReadVector3()
     {
         float x = ReadFloat();
         float y = ReadFloat();
         float z = ReadFloat();
-        return new UnityEngine.Vector3(x,y,z);
+        return new Vector3(x,y,z);
     }
 
-    public Letter Write(UnityEngine.Quaternion value)
+    public Letter Write(Quaternion value)
     {
         Write(value.x);
         Write(value.y);
@@ -265,13 +261,13 @@ public class Letter
         return this;
     }
 
-    public UnityEngine.Quaternion ReadQuaternion()
+    public Quaternion ReadQuaternion()
     {
         float x = ReadFloat();
         float y = ReadFloat();
         float z = ReadFloat();
         float w = ReadFloat();
-        return new UnityEngine.Quaternion(x, y, z, w);
+        return new Quaternion(x, y, z, w);
     }
 
     public Letter Write(Color value)
@@ -293,4 +289,5 @@ public class Letter
 
         return new Color(r, g, b, a);
     }
+    #endregion
 }

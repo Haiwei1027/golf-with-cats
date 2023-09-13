@@ -13,93 +13,74 @@ public class PostOffice : MonoBehaviour
     public static readonly int SocketBufferSize = 1024 * 1024;
     public static readonly int Capacity = 64;
 
-    private List<ResidentRecord> residents = new List<ResidentRecord>();
-    private List<ResidentRecord> leavers = new List<ResidentRecord>();
+    private static Dictionary<int, ResidentRecord> residents = new Dictionary<int, ResidentRecord>();
 
-    private List<Town> abandonedTowns = new List<Town>();
-    private List<Town> towns = new List<Town>();
+    private static Dictionary<int,Town> towns = new Dictionary<int,Town>();
 
-    private Socket serverSocket;
+    private static Socket serverSocket;
 
-    public delegate void LetterHandler(ResidentRecord sender, Letter letter);
-    public static Dictionary<byte, LetterHandler> letterHandlers;
+    private static bool listening = false;
+    private static bool accepting = false;
 
-    private bool listening = false;
-    private bool accepting = false;
+    public static System.Random randomGenerator;
 
-    private System.Random randomGenerator;
+    public static PostOfficeLetterHandler letterHandler;
 
-    #region Letter Handlers
-    public void HandleIntroduce(ResidentRecord sender, Letter letter)
+    public static Town MakeTown(ResidentRecord founder)
     {
-        string username = letter.ReadString();
-        sender.Username = username;
-        Debug.LogAssertion($"{username} Connected");
-        letter.Release();
+        Town town = new Town(founder);
+        towns.Add(town.Id, town);
+        return town;
     }
 
-    public void HandleCreateTown(ResidentRecord sender, Letter letter)
+    public static Town GetTown(int id)
     {
-        towns.Add(new Town(sender, 4));
-    }
-
-    public void HandleJoinTown(ResidentRecord sender, Letter letter)
-    {
-        Town town = GetTown(letter.ReadInt());
-        town.Join(sender);
-    }
-
-    public void HandleLeaveTown(ResidentRecord sender, Letter letter)
-    {
-        GetTown(sender.Town.Id).Leave(sender);
-    }
-
-    public void HandleHologramCreate(ResidentRecord sender, Letter letter)
-    {
-        GetTown(sender.Town.Id).hologramDatabase.Add(sender,letter);
-    }
-
-    public void HandleHologramUpdate(ResidentRecord sender, Letter letter)
-    {
-        GetTown(sender.Town.Id).hologramDatabase.Update(sender,letter);
-    }
-
-    public void HandleHologramDestroy(ResidentRecord sender, Letter letter)
-    {
-        GetTown(sender.Town.Id).hologramDatabase.Remove(sender,letter);
-    }
-
-    public void HandleStartGame(ResidentRecord sender, Letter letter)
-    {
-        GetTown(sender.Town.Id).Start(sender, letter);
-    }
-
-    #endregion
-
-    public Town GetTown(int id)
-    {
-        foreach (Town t in towns)
+        try
         {
-            if (t.Id == id)
-            {
-                return t;
-            }
+            return towns[id];
         }
-        Debug.LogAssertion($"No Town of ID {id} Was Found");
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
         return null;
     }
 
-    public ResidentRecord GetResident(int id)
+    public static void DestroyTown(int id)
     {
-        foreach (ResidentRecord r in residents)
+        try
         {
-            if (r.Id == id)
-            {
-                return r;
-            }
+            towns.Remove(id);
         }
-        Debug.LogAssertion($"No Resident of ID {id} Was Found");
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+    public static ResidentRecord GetResident(int id)
+    {
+        try
+        {
+            return residents[id];
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
         return null;
+    }
+
+    public static void KickResident(int id)
+    {
+        try
+        {
+            residents.Remove(id);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
     }
 
     public void Awake()
@@ -109,30 +90,17 @@ public class PostOffice : MonoBehaviour
 
     void Start()
     {
-        Debug.LogAssertion("Initialising");
-
-        letterHandlers = new Dictionary<byte, LetterHandler>()
-        {
-            {(byte)LetterType.INTRODUCE, HandleIntroduce},
-            {(byte)LetterType.CREATETOWN, HandleCreateTown},
-            {(byte)LetterType.JOINTOWN,HandleJoinTown },
-            {(byte)LetterType.LEAVETOWN, HandleLeaveTown },
-            {(byte)LetterType.HOLOGRAMCREATE, HandleHologramCreate},
-            {(byte)LetterType.HOLOGRAMUPDATE, HandleHologramUpdate},
-            {(byte)LetterType.HOLOGRAMDESTROY, HandleHologramDestroy },
-            {(byte)LetterType.STARTGAME, HandleStartGame }
-        };
-
-        Debug.LogAssertion("Starting");
+        Debug.Log("Starting");
         serverSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
         {
             SendBufferSize = SocketBufferSize,
             ReceiveBufferSize = SocketBufferSize
         };
-        Debug.LogAssertion("Binding");
+        Debug.Log("Binding");
         serverSocket.Bind(new IPEndPoint(IPAddress.Any,Port));
         serverSocket.Listen(0);
         listening = true;
+        letterHandler = new PostOfficeLetterHandler();
     }
 
     void AcceptConnection()
@@ -141,10 +109,9 @@ public class PostOffice : MonoBehaviour
         if (serverSocket == null) return;
         if (!serverSocket.IsBound) return;
         if (residents.Count >= Capacity) return;
-        Debug.LogAssertion("Accepting");
+        Debug.Log("Accepting");
         serverSocket.BeginAccept(AcceptCallback,null);
         accepting = true;
-        
     }
 
     int GenerateUserID()
@@ -159,61 +126,39 @@ public class PostOffice : MonoBehaviour
     void AcceptCallback(IAsyncResult result)
     {
         Socket clientSocket = serverSocket.EndAccept(result);
-        Debug.LogAssertion("Accepted");
+        Debug.Log("Accepted");
         
-        Postbox newPostbox = new Postbox(clientSocket);
-        newPostbox.onLetter += (postbox, letter) =>
-        {
-            letterHandlers[letter.ReadByte()](postbox, letter);
-        };
+        Postbox newPostbox = new Postbox(clientSocket, letterHandler);
 
         int id = GenerateUserID();
-        Letter welcomeLetter = Letter.Get().WriteWelcome(id);
+        Letter welcomeLetter = LetterFactory.Get().WriteWelcome(id);
         newPostbox.Send(welcomeLetter);
 
-        residents.Add(new ResidentRecord(newPostbox, id));
+        residents.Add(id, new ResidentRecord(newPostbox, id));
         accepting = false;
     }
 
     void Disconnect(ResidentRecord resident)
     {
+        GetTown(resident.Town.Id).Leave(resident);
         resident.Postbox.Close();
-        GetTown(resident.Town.Id).Leave(resident);   
     }
 
     void FixedUpdate()
     {
         AcceptConnection();
         bool stillConnected;
-        foreach (ResidentRecord resident in residents)
+        foreach (ResidentRecord resident in residents.Values)
         {
             stillConnected = resident.Postbox.ReceiveData();
-            if (!stillConnected)
-            {
-                leavers.Add(resident);
-                Debug.Log($"{resident.Username} Disconnected");
-                Disconnect(resident);
-            }
         }
-        foreach (ResidentRecord leaver in leavers)
-        {
-            residents.Remove(leaver);
-        }
-        leavers.Clear();
 
-        foreach (Town town in towns)
+        Town town;
+        foreach (int townId in towns.Keys)
         {
+            town = towns[townId];
             town.Update();
-            if (town.Population <= 0)
-            {
-                abandonedTowns.Add(town);
-            }
         }
-        foreach(Town town in abandonedTowns)
-        {
-            towns.Remove(town);
-        }
-        abandonedTowns.Clear();
     }
 
     void OnApplicationQuit()
@@ -222,7 +167,7 @@ public class PostOffice : MonoBehaviour
         {
             serverSocket.Close();
         }
-        foreach (ResidentRecord resident in residents)
+        foreach (ResidentRecord resident in residents.Values)
         {
             Disconnect(resident);
         }

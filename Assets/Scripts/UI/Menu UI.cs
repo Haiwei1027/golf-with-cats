@@ -42,19 +42,24 @@ public class MenuUI : MonoBehaviour
 
     private void Listen()
     {
-        Resident.onConnected += OnConnected;
-        Resident.onDisconnected += OnDisconnect;
-        Resident.onJoinTown += OnJoinLobby;
-        Resident.onLeaveTown += OnLeaveLobby;
-        Resident.onStartGame += OnStartGame;
+        Resident.Instance.LetterHandler.onConnected += OnConnected;
+        Resident.Instance.LetterHandler.onDisconnected += OnDisconnect;
+        Resident.Instance.LetterHandler.onJoinTown += OnJoinLobby;
+        Resident.Instance.LetterHandler.onLeaveTown += OnLeaveLobby;
+        Resident.Instance.LetterHandler.onStartGame += OnStartGame;
+    }
+
+    private void Awake()
+    {
+        Initialise();
+        
     }
 
     private void Start()
     {
-        Initialise();
-
         Listen();
-        Resident.Disconnect();
+        OnDisconnect();
+        //Resident.Disconnect();
     }
 
     public void OnStartGame()
@@ -84,12 +89,32 @@ public class MenuUI : MonoBehaviour
             preLobbyUI.SetActive(false);
             inLobbyUI.SetActive(true);
 
-            lobbyIdLabel.text = $"Room Id:{Resident.Instance.town.Id}";
+            lobbyIdLabel.text = $"Room Id:{Resident.Instance.Town.Id}";
         }
         else
         {
 
         }
+        UpdateLobbyUI();
+    }
+
+    public void OnLeaveLobby(int leftResidentId)
+    {
+        if (leftResidentId == Resident.Id)
+        {
+            connectUI.SetActive(false);
+            preLobbyUI.SetActive(true);
+            inLobbyUI.SetActive(false);
+        }
+        else
+        {
+
+        }
+        UpdateLobbyUI();
+    }
+
+    public void UpdateLobbyUI()
+    {
         for (int i = 0; i < Resident.Instance.record.Town.Population; i++)
         {
             playerList.GetChild(i).gameObject.SetActive(true);
@@ -107,13 +132,6 @@ public class MenuUI : MonoBehaviour
                 playerList.GetChild(i).gameObject.SetActive(false);
             }
         }
-    }
-
-    public void OnLeaveLobby()
-    {
-        connectUI.SetActive(false);
-        preLobbyUI.SetActive(true);
-        inLobbyUI.SetActive(false);
     }
 
 }
