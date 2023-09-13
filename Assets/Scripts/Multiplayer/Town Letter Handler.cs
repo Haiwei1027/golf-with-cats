@@ -11,7 +11,7 @@ public class TownLetterHandler : LetterHandler
         this.town = town;
     }
 
-    public override void Close()
+    public override void Close(Postbox postbox)
     {
         
     }

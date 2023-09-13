@@ -45,7 +45,7 @@ public class ResidentLetterHandler : LetterHandler
         letter.Release();
     }
 
-    public override void Close()
+    public override void Close(Postbox postbox)
     {
         onDisconnected?.Invoke();
     }

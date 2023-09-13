@@ -4,17 +4,6 @@ using UnityEngine;
 
 public class PostOfficeLetterHandler : LetterHandler
 {
-    /*letterHandlers = new Dictionary<byte, LetterHandler>()
-        {
-            {(byte) LetterType.INTRODUCE, HandleIntroduce},
-            { (byte)LetterType.CREATETOWN, HandleCreateTown},
-            { (byte)LetterType.JOINTOWN,HandleJoinTown },
-            { (byte)LetterType.LEAVETOWN, HandleLeaveTown },
-            { (byte)LetterType.HOLOGRAMCREATE, HandleHologramCreate},
-            { (byte)LetterType.HOLOGRAMUPDATE, HandleHologramUpdate},
-            { (byte)LetterType.HOLOGRAMDESTROY, HandleHologramDestroy },
-            { (byte)LetterType.STARTGAME, HandleStartGame }
-        };*/
 
     public override void Handle(ResidentRecord postboxOwner, Letter letter)
     {
@@ -40,7 +29,7 @@ public class PostOfficeLetterHandler : LetterHandler
         letter.Release();
     }
 
-    public override void Close()
+    public override void Close(Postbox postbox)
     {
         
     }

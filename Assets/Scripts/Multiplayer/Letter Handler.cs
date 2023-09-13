@@ -6,5 +6,5 @@ public abstract class LetterHandler
 {
     public abstract void Handle(ResidentRecord postboxOwner, Letter letter);
 
-    public abstract void Close();
+    public abstract void Close(Postbox postbox);
 }

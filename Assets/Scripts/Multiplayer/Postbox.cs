@@ -125,7 +125,7 @@ public class Postbox
 
     public void Close()
     {
-        letterHandler.Close();
+        letterHandler.Close(this);
         if (socket != null)
         {
             socket.Close();
