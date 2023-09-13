@@ -13,7 +13,7 @@ public class TownLetterHandler : LetterHandler
 
     public override void Close(Postbox postbox)
     {
-        
+        town.Leave(postbox.Owner);
     }
 
     public override void Handle(ResidentRecord postboxOwner, Letter letter)

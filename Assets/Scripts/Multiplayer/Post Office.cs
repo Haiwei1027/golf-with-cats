@@ -46,6 +46,18 @@ public class PostOffice : MonoBehaviour
         return null;
     }
 
+    public static void DestroyTown(int id)
+    {
+        try
+        {
+            towns.Remove(id);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
     public static ResidentRecord GetResident(int id)
     {
         try
@@ -57,6 +69,18 @@ public class PostOffice : MonoBehaviour
             Debug.LogException(e);
         }
         return null;
+    }
+
+    public static void KickResident(int id)
+    {
+        try
+        {
+            residents.Remove(id);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
     }
 
     public void Awake()

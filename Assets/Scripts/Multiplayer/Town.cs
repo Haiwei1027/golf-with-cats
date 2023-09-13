@@ -74,6 +74,11 @@ public class Town
     public void Leave(ResidentRecord resident)
     {
         record.RemoveResident(resident);
+        if (Population <= 0 )
+        {
+            Stop();
+            return;
+        }
         resident.Postbox.letterHandler = PostOffice.letterHandler;
 
         Debug.Log($"Resident {resident.Id} left {record.Id}");
@@ -100,6 +105,11 @@ public class Town
     public void Update()
     {
         if (!started) { return; }
+    }
+
+    public void Stop()
+    {
+        PostOffice.DestroyTown(Id);
     }
 
     public void SendToAllResidents(Letter letter, bool release = true)

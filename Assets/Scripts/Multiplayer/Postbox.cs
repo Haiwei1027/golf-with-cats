@@ -57,7 +57,7 @@ public class Postbox
     {
         Letter letter = LetterFactory.Get();
         letter.Copy(receiveBuffer, amount);
-        
+           
         letterHandler.Handle(owner, letter);
     }
 
