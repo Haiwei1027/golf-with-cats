@@ -73,8 +73,8 @@ public class MultiplayerUI : MonoBehaviour
     {
         connectPanel.SetActive(false);
         lobbyPanel.SetActive(false);
-        UpdateNames(Resident.Instance.town.Residents);
-        roomIdLabel.text = $"Room ID: {Resident.Instance.town.Id}";
+        UpdateNames(Resident.Instance.Town.Residents);
+        roomIdLabel.text = $"Room ID: {Resident.Instance.Town.Id}";
         townPanel.SetActive(true);
 
         if (newResidentID == Resident.Instance.record.Id)

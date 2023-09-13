@@ -18,7 +18,7 @@ public class Resident : MonoBehaviour
     public static int Id { get { return Instance.record.Id; } }
 
     public ResidentRecord record;
-    public TownRecord town;
+    public TownRecord Town { get { return record.Town; } }
 
     public Postbox Postbox { get; private set; }
     public ResidentLetterHandler LetterHandler { get { return (ResidentLetterHandler)Postbox.letterHandler; } }
@@ -44,7 +44,6 @@ public class Resident : MonoBehaviour
     {
         Instance.Postbox.Close();
         Instance.record = null;
-        Instance.town = null;
     }
 
     public static void JoinTown(string lobbyCode)

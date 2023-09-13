@@ -49,12 +49,17 @@ public class MenuUI : MonoBehaviour
         Resident.Instance.LetterHandler.onStartGame += OnStartGame;
     }
 
-    private void Start()
+    private void Awake()
     {
         Initialise();
+        
+    }
 
+    private void Start()
+    {
         Listen();
-        Resident.Disconnect();
+        OnDisconnect();
+        //Resident.Disconnect();
     }
 
     public void OnStartGame()
@@ -84,7 +89,7 @@ public class MenuUI : MonoBehaviour
             preLobbyUI.SetActive(false);
             inLobbyUI.SetActive(true);
 
-            lobbyIdLabel.text = $"Room Id:{Resident.Instance.town.Id}";
+            lobbyIdLabel.text = $"Room Id:{Resident.Instance.Town.Id}";
         }
         else
         {

@@ -90,7 +90,7 @@ public class ResidentLetterHandler : LetterHandler
                 record.Town.AddResident(record);
             }
         }
-
+        Debug.Log(record.Town.Population);
         onJoinTown?.Invoke(newResidentID);
     }
 }
