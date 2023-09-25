@@ -57,7 +57,9 @@ public class Postbox
     {
         Letter letter = LetterFactory.Get();
         letter.Copy(receiveBuffer, amount);
-           
+
+        Debug.Log($"Received {(LetterType)receiveBuffer[0]}");
+
         letterHandler.Handle(owner, letter);
     }
 
@@ -110,6 +112,9 @@ public class Postbox
         try
         {
             ushort amount = letter.Ready(sendBuffer, 0);
+
+            Debug.Log($"Sending {(LetterType)sendBuffer[2]}");
+
             socket.Send(sendBuffer, amount, SocketFlags.None);
             if (!release)
             {
